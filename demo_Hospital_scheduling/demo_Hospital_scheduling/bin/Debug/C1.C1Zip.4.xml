@@ -1,0 +1,1572 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>C1.C1Zip.4</name>
+  </assembly>
+  <members>
+    <member name="T:C1.C1Zip.C1ZipEntry">
+      <summary>
+            Represents an entry in a zip file, and exposes information including the entry name,
+            compressed and uncompressed sizes, date, checksum, etc.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntry.CheckCRC32">
+      <summary>
+            Calculates a checksum value for the entry and compares it to the checksum that
+            was stored when the entry was created.
+            </summary>
+      <returns>True if the checksum values match, false otherwise.</returns>
+      <remarks>
+            This method is used to check the integrity of the entries in the zip file. If the
+            calculated checksum does not match the stored checksum, then either the zip file is
+            corrupted or the program used to create the zip file is incompatible with 
+            <b>C1Zip</b>.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntry.CheckPassword">
+      <summary>
+            Checks whether this <see cref="T:C1.C1Zip.C1ZipEntry" /> can be read with the currently set password.
+            </summary>
+      <returns>True if the entry can be read with the current password, or if the entry is not
+            encrypted.</returns>
+      <remarks>
+            This method is more efficient than using a try/catch block and trying to open the entry
+            to determine whether the current password is valid for the entry.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntry.OpenReader">
+      <summary>
+            Returns a <see cref="T:System.IO.Stream" /> that can be used to read the content of the entry without
+            extracting it to a disk file.
+            </summary>
+      <returns>A <see cref="T:System.IO.Stream" /> that can be used to read the data in the entry.</returns>
+      <remarks>
+            The <see cref="T:System.IO.Stream" /> returned is a <see cref="T:C1.C1Zip.C1ZStreamReader" />, which 
+            decompresses the data as it is read from the entry.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntry.Extract(System.String)">
+      <summary>
+            Extracts this entry to a file.
+            </summary>
+      <param name="destFileName">Name and location of the extracted file.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntry.Remove">
+      <summary>
+            Removes this entry from the zip file.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.FileName">
+      <summary>
+            Gets the entry name. This is usually a file name, optionally including a path.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.SizeUncompressed">
+      <summary>
+            Gets the original (uncompressed) size of the entry, in bytes.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.SizeCompressed">
+      <summary>
+            Gets the compressed size of the entry, in bytes.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.SizeUncompressedLong">
+      <summary>
+            Gets the original (uncompressed) size of the entry, in bytes, as a long integer.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.SizeCompressedLong">
+      <summary>
+            Gets the compressed size of the entry, in bytes, as a long integer.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.CRC32">
+      <summary>
+            Gets the checksum calculated when the entry was compressed.
+            </summary>
+      <remarks>
+            This value can be used to check the integrity of the entry when it is decompressed.
+            </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.Date">
+      <summary>
+            Gets the date and time when the file used to create the entry was last modified.
+            </summary>
+      <remarks>
+            This value can be used to check whether an entry needs to be updated because the
+            source file was modified since it was last compressed.
+            </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.Comment">
+      <summary>
+            Gets or sets a comment associated with the entry.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.Attributes">
+      <summary>
+            Gets the file attributes associated with the entry.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntry.IsEncrypted">
+      <summary>
+            Gets a value that determines whether the entry is encrypted.
+            </summary>
+      <remarks>
+            Encrypted entries can only be extracted if the <see cref="P:C1.C1Zip.C1ZipFile.Password" /> property
+            on the containing <see cref="T:C1.C1Zip.C1ZipFile" /> object is set to the password that was used
+            when the file was added to the zip file.
+            </remarks>
+    </member>
+    <member name="T:C1.C1Zip.C1ZipEntryCollection">
+      <summary>
+            A collection of <see cref="T:C1.C1Zip.C1ZipEntry" /> objects that represent the contents of
+            a zip file.
+            </summary>
+      <remarks>
+            Use the <b>C1ZipEntryCollection</b> to programmatically manage the contents of zip
+            files. You can add, remove, extract, or insert items into the <b>C1ZipEntryCollection</b>.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Contains(System.String)">
+      <summary>
+            Determines whether the collection contains an entry with a given name.
+            </summary>
+      <param name="name">Name of the entry to look for.</param>
+      <returns>True if the collection contains an entry with the given name, false otherwise.</returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Contains(C1.C1Zip.C1ZipEntry)">
+      <summary>
+            Determines whether the collection contains an entry.
+            </summary>
+      <param name="entry">Entry of the entry to look for.</param>
+      <returns>True if the collection contains the entry, false otherwise.</returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.IndexOf(System.String)">
+      <summary>
+            Gets the index of the entry with the specified name.
+            </summary>
+      <param name="name">Name of the entry to look for.</param>
+      <returns>The index of the entry in the collection, or -1 if the entry was not found.</returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.IndexOf(C1.C1Zip.C1ZipEntry)">
+      <summary>
+            Gets the index of an entry in the collection.
+            </summary>
+      <param name="entry">
+        <see cref="T:C1.C1Zip.C1ZipEntry" /> to look for.</param>
+      <returns>The index of the entry in the collection, or -1 if the entry was not found.</returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Add(System.String)">
+      <summary>
+            Adds an entry to the current zip file.
+            </summary>
+      <param name="fileName">Name of the file to add to the zip file.</param>
+      <remarks>
+            By default, the directory name is not stored in the zip file. To store a specific
+            part of the directory name in the zip file, use the overloaded version of the 
+            <b>Add</b> method with a <b>pathLevels</b> parameter.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Add(System.String[])">
+      <summary>
+            Adds a list of entries to the current zip file.
+            </summary>
+      <param name="fileNames">Array containing the file names of the entries to be added to the zip file.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Add(System.String,System.Int32)">
+      <summary>
+            Adds an entry to the current zip file.
+            </summary>
+      <param name="fileName">Name of the file to add to the zip file.</param>
+      <param name="pathLevels">The number of path levels to be stored as the entry name.</param>
+      <remarks>
+        <para>By default, path names are not stored in the zip file. For example, adding
+            the file "c:\temp\samples\readme.txt" to the zip file will create an entry called
+            "readme.txt".</para>
+        <para>The <paramref name="pathLevels" /> parameter allows you to store one or more levels of the path in the entry name.
+            For example, adding the file "c:\temp\samples\readme.txt" to the zip file with <paramref name="pathLevels" />=1 
+            will create an entry called "samples\readme.txt".</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Add(System.String,System.String)">
+      <summary>
+            Adds an entry to the current zip file.
+            </summary>
+      <param name="fileName">Name of the file to add to the zip file.</param>
+      <param name="entryName">Name of the new entry as stored in the zip file.</param>
+      <remarks>
+            By default, entries in the zip file have the same name as the original (uncompressed)
+            file. This method allows you to specify a different name, including a path for example.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Add(System.String,System.String,System.DateTime)">
+      <summary>
+            Adds an entry to the current zip file.
+            </summary>
+      <param name="fileName">Name of the file to add to the zip file.</param>
+      <param name="entryName">Name of the new entry as stored in the zip file.</param>
+      <param name="dateTime">The date and time when the file was last modified.</param>
+      <remarks>
+            By default, entries in the zip file have the same name as the original (uncompressed)
+            file. This method allows you to specify a different name, including a path for example.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Add(System.IO.Stream,System.String)">
+      <summary>
+            Adds a stream to the current zip file.
+            </summary>
+      <param name="stream">Stream that contains data for the new entry.</param>
+      <param name="entryName">Name to be used for the new entry.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Add(System.IO.Stream,System.String,System.DateTime)">
+      <summary>
+            Adds a stream to the current zip file.
+            </summary>
+      <param name="stream">Stream that contains data for the new entry.</param>
+      <param name="entryName">Name to be used for the new entry.</param>
+      <param name="dateTime">The date and time when the file was last modified.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.AddFolder(System.String)">
+      <summary>
+            Adds the content of a folder to the current zip file.
+            </summary>
+      <param name="path">The full path of the folder to be added to the zip file.</param>
+      <remarks>
+            This method adds all files and sub folders to the zip file.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.AddFolder(System.String,System.String)">
+      <summary>
+            Adds the content of a folder to the current zip file.
+            </summary>
+      <param name="path">The full path of the folder to be added to the zip file.</param>
+      <param name="searchPattern">A mask that specifies which files to add.</param>
+      <remarks>
+            If the folder contains sub folders, those are also added to the zip file.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.AddFolder(System.String,System.String,System.Boolean)">
+      <summary>
+            Adds the content of a folder to the current zip file.
+            </summary>
+      <param name="path">The full path of the folder to be added to the zip file.</param>
+      <param name="searchPattern">A mask that specifies which files to add.</param>
+      <param name="includeSubfolders">True to include sub folders, false to include only files at the root level.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.ExtractFolder(System.String)">
+      <summary>
+            Extracts the contents of the zip file into a specified path.
+            </summary>
+      <param name="path">Destination path for the unzipped files.</param>
+      <remarks>
+            If the zip file contains compressed folders, new folders will be created
+            under the destination path to preserve the hierarchical structure of the
+            archive.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Remove(System.Int32)">
+      <summary>
+            Removes an entry from the current zip file.
+            </summary>
+      <param name="index">Index of the entry to remove.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Remove(System.String)">
+      <summary>
+            Removes an entry from the current zip file.
+            </summary>
+      <param name="fileName">Name of the entry to remove (case-insensitive).</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Remove(System.Int32[])">
+      <summary>
+            Removes several entries from the current zip file.
+            </summary>
+      <param name="indices">Array containing the indices of the entries to remove.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Remove(System.String[])">
+      <summary>
+            Removes several entries from the current zip file.
+            </summary>
+      <param name="entryNames">Array containing the names of the entries to remove.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Extract(System.Int32,System.String)">
+      <summary>
+            Extracts a file from the current zip file. 
+            </summary>
+      <param name="index">Index of the entry to extract.</param>
+      <param name="destFileName">Name and location of the extracted file.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Extract(System.String,System.String)">
+      <summary>
+            Extracts a file from the current zip file. 
+            </summary>
+      <param name="entryName">Name of the entry to extract.</param>
+      <param name="destFileName">Name and location of the extracted file.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Extract(System.Int32)">
+      <summary>
+            Extracts a file from the current zip file. 
+            </summary>
+      <param name="index">Index of the entry to extract.</param>
+      <remarks>
+            The entry is extracted to a file in the same folder as the current zip
+            file, with the same name as the entry.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.Extract(System.String)">
+      <summary>
+            Extracts a file from the current zip file. 
+            </summary>
+      <param name="entryName">Name of the entry to extract.</param>
+      <remarks>
+            The entry is extracted to a file in the same folder as the current zip
+            file, with the same name as the entry.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.OpenWriter(System.String,System.Boolean)">
+      <summary>
+            Opens a stream for writing an entry into the zip file.
+            </summary>
+      <param name="entryName">The name of the new entry.</param>
+      <param name="useMemory">Whether to use a memory stream or temporary file.</param>
+      <returns>
+            A stream that can be used to write data into the zip file. The entry
+            is not added until the stream is closed.
+            </returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipEntryCollection.OpenWriter(System.String,System.DateTime,System.Boolean)">
+      <summary>
+            Opens a stream for writing an entry into the zip file.
+            </summary>
+      <param name="entryName">The name of the new entry.</param>
+      <param name="dateTime">The date and time when the file was last modified.</param>
+      <param name="useMemory">Whether to use a memory stream or temporary file.</param>
+      <returns>
+            A stream that can be used to write data into the zip file. The entry
+            is not added until the stream is closed.
+            </returns>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntryCollection.Count">
+      <summary>
+            Gets the number of entries in the current zip file.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntryCollection.Item(System.Int32)">
+      <summary>
+            Gets the <see cref="T:C1.C1Zip.C1ZipEntry" /> at the specified index.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipEntryCollection.Item(System.String)">
+      <summary>
+            Gets the <see cref="T:C1.C1Zip.C1ZipEntry" /> with the given name (returns null if the entry cannot be found).
+            </summary>
+    </member>
+    <member name="T:C1.C1Zip.C1ZipFile">
+      <summary>
+            Used for creating, opening, and managing zip files.
+            </summary>
+      <remarks>
+        <para>Use the <see cref="M:C1.C1Zip.C1ZipFile.Open(System.String)" /> or <see cref="M:C1.C1Zip.C1ZipFile.Create(System.String)" /> methods to 
+            associate the C1Zip file object with a zip file on disk. Then use the 
+            <see cref="P:C1.C1Zip.C1ZipFile.Entries" /> property to add, remove, retrieve, or inspect 
+            individual entries in the zip file.</para>
+        <para>
+          <see cref="T:C1.C1Zip.C1ZipFile" /> can only be used with standard zip files. The component
+            does not support other similar formats such as gzip, zip2, tar, or rar.</para>
+        <para>The standard zip file imposes some limitations on the size of each entry. 
+            You cannot use it to compress files larger than 4 gigabytes (uint.MaxValue).</para>
+      </remarks>
+      <example>
+            The code below creates a zip file called <b>sources.zip</b> and adds all 
+            files with a "cs" extension to the zip file:
+            <code>
+            // get path for zip file and files to compress
+            string path = Application.ExecutablePath;
+            int pos = path.IndexOf(@"\bin");
+            path = path.Substring(0, pos + 1);
+            
+            // create a zip file
+            C1ZipFile zip = new C1ZipFile();
+            zip.Create(path + "source.zip");
+            
+            // add all files with extension cs to the zip file
+            foreach (string fileName in Directory.GetFiles(path, "*.cs"))
+            	zip.Entries.Add(fileName);
+            	
+            // show result
+            foreach (C1ZipEntry ze in zip.Entries)
+            {
+            	Console.WriteLine("{0} {1:#,##0} {2:#,##0}", 
+            		ze.FileName, ze.SizeUncompressed, ze.SizeCompressed);
+            }
+            </code></example>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.#ctor">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZipFile" /> class.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.#ctor(System.String,System.Boolean)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZipFile" /> class and creates or opens
+            a zip file associated with this new instance.
+            </summary>
+      <param name="fileName">The name of the zip file to open or create.</param>
+      <param name="create">True to create a new zip file, false to open an existing file.</param>
+      <remarks>
+        <para>If <paramref name="create" /> is true and the zip file already exists, it is overwritten
+            with a new empty file.</para>
+        <para>If <paramref name="create" /> is false and the zip file already exists, the existing file 
+            is opened.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.#ctor(System.String)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZipFile" /> class and opens a zip file associated 
+            with this new instance.
+            </summary>
+      <param name="fileName">The name of the zip file to open.</param>
+      <remarks>
+            If the file does not exist, a new empty file is created.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.#ctor(System.IO.Stream,System.Boolean)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZipFile" /> class and opens a zip stream associated 
+            with this new instance.
+            </summary>
+      <param name="stream">
+        <see cref="T:System.IO.Stream" /> that contains the zip data.</param>
+      <param name="create">Whether to initialize the stream with an empty zip header or open an existing
+            zip file in the stream.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.#ctor(System.IO.Stream)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZipFile" /> class and opens a zip stream associated 
+            with this new instance.
+            </summary>
+      <param name="stream">
+        <see cref="T:System.IO.Stream" /> that contains the zip data.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.Open(System.String)">
+      <summary>
+            Opens an existing zip file.
+            </summary>
+      <param name="fileName">The name of an existing zip file, including the path.</param>
+      <remarks>
+        <para>This method checks that the zip file exists and is a valid zip file, then
+            reads the zip file directory into the <see cref="P:C1.C1Zip.C1ZipFile.Entries" /> collection.
+            The zip file is then closed, and can be used by other applications. There is no
+            need to close the zip file explicitly.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.Create(System.String)">
+      <summary>
+            Creates an empty zip file on disk.
+            </summary>
+      <param name="fileName">The name of the zip file to create, including the path.</param>
+      <remarks>
+            If a file by the same name already exists, it is deleted before the new one
+            is created.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.Open(System.IO.Stream)">
+      <summary>
+            Opens an existing zip file stored in a stream.
+            </summary>
+      <param name="stream">
+        <see cref="T:System.IO.Stream" /> that contains a zip file.</param>
+      <remarks>
+        <para>This method allows you to open and work with a zip file stored in a stream
+            instead of in an actual file.</para>
+        <para>Typical usage scenarios for this are zip files stored as application resources 
+            or in binary database fields.</para>
+      </remarks>
+      <example>
+        <para>The example below loads information from a zip file stored in an embedded resource. 
+            To embed a zip file in an application, follow these steps:</para>
+        <para>1) Right-click the project node in Visual Studio, select the <b>Add | Add Existing Item...</b> menu option.</para>
+        <para>2) Select a zip file to add to the project as an embedded resource.</para>
+        <para>3) Select the newly added file and make sure the <b>Build Action</b> property is set to "Embedded Resource".</para>
+        <code>
+            // get Stream from application resources
+            System.Reflection.Assembly a = this.GetType().Assembly;
+            using (Stream stream = a.GetManifestResourceStream("MyApp.test.zip"))
+            {
+              // open C1ZipFile on the stream
+              zip.Open(stream);
+            
+              // enumerate the entries in the zip file,
+              foreach (C1ZipEntry ze in zip.Entries)
+              {
+                // show entries that have a 'txt' extension.
+                if (ze.FileName.ToLower().EndsWith(".txt"))
+                {
+                  using (var sr = new StreamReader(ze.OpenReader()))
+                  {
+                    MessageBox.Show(sr.ReadToEnd(), ze.FileName);
+                  }
+                }
+              }
+            }
+            </code>
+      </example>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.Create(System.IO.Stream)">
+      <summary>
+            Creates a new zip file in a stream.
+            </summary>
+      <param name="stream">
+        <see cref="T:System.IO.Stream" /> that will contain the new zip file.</param>
+      <example>
+            The code below creates a new <see cref="T:C1.C1Zip.C1ZipFile" /> on a memory stream, then adds
+            several files to it. Finally, the code gets the zipped data out as an array of bytes,
+            which could be stored in a database for example.
+            <code>
+            // create zip on a stream
+            MemoryStream msZip = new MemoryStream();
+            C1ZipFile zip = new C1ZipFile(msZip, true);
+            
+            // add some entries to it
+            foreach (string f in Directory.GetFiles(@"c:\WINDOWS\Web\Wallpaper"))
+            {
+              zip.Entries.Add(f);
+            }
+            
+            // get zipped data out as a byte array
+            byte[] zipData = msZip.ToArray();
+            </code></example>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.Close">
+      <summary>
+            Resets all data members of the <see cref="T:C1.C1Zip.C1ZipFile" /> object.
+            </summary>
+      <remarks>
+            Disk files are automatically closed by <b>C1Zip</b>. You only need to use this
+            method if you want to break the connection between a <see cref="T:C1.C1Zip.C1ZipFile" /> class 
+            and a physical zip file.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.Refresh">
+      <summary>
+            Refreshes all data members by re-opening the current zip file.
+            </summary>
+      <remarks>
+            This method is useful in instances where other applications may have changed
+            the zip file and you want to make sure the information in the <see cref="P:C1.C1Zip.C1ZipFile.Entries" />
+            collection is up to date.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.IsZipFile(System.String)">
+      <summary>
+            Tests whether a file is a valid zip file.
+            </summary>
+      <param name="fileName">Name of the file to test.</param>
+      <returns>True if the file exists and is a valid zip file, false otherwise.</returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.IsZipFile(System.IO.Stream)">
+      <summary>
+            Tests whether a stream contains a valid zip file.
+            </summary>
+      <param name="stream">
+        <see cref="T:System.IO.Stream" /> to test.</param>
+      <returns>True if <paramref name="stream" /> contains a valid zip file, false otherwise.</returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.OpenBatch">
+      <summary>
+            Opens the zip file for multiple operations.
+            </summary>
+      <remarks>
+        <para>By default, <see cref="T:C1.C1Zip.C1ZipFile" /> opens and closes the zip file 
+            automatically whenever entries are added or removed.</para>
+        <para>This can cause delays in systems that have certain types of anti-virus
+            software installed, or in situations where you want to add a large number of 
+            relatively small entries. In these cases, use the <see cref="M:C1.C1Zip.C1ZipFile.OpenBatch" /> and 
+            <see cref="M:C1.C1Zip.C1ZipFile.CloseBatch" /> methods to keep the zip file open until the entire 
+            operation is concluded.</para>
+        <para>Use a finally clause to ensure that the <see cref="M:C1.C1Zip.C1ZipFile.CloseBatch" /> 
+            method is called even if an exception occurs.</para>
+      </remarks>
+      <example>
+            The code below opens a zip file, adds several entries to it, then closes 
+            the file:
+            <code>
+            C1ZipFile zip = new C1ZipFile();
+            zip.Open(myzipfile);
+            try
+            {
+            	zip.OpenBatch();
+            	foreach (string fileName in Directory.GetFiles(path, "*.*"))
+            		zip.Entries.Add(fileName);
+            }
+            finally
+            {
+            	zip.CloseBatch();
+            }
+            </code></example>
+    </member>
+    <member name="M:C1.C1Zip.C1ZipFile.CloseBatch">
+      <summary>
+            Closes a zip file after it was opened with a call to the 
+            <see cref="M:C1.C1Zip.C1ZipFile.OpenBatch" /> method.
+            </summary>
+      <remarks>
+            See the <see cref="M:C1.C1Zip.C1ZipFile.OpenBatch" /> method for a complete description 
+            and a sample.
+            </remarks>
+    </member>
+    <member name="E:C1.C1Zip.C1ZipFile.Progress">
+      <summary>
+             Fired while data is being read from or written into a zip file.
+             </summary>
+      <remarks>
+             This event is typically used to update the application UI during lengthy
+             operations. It can also be used to cancel the operations.
+            </remarks>
+      <example>
+             The code below writes messages to the output window while the application
+             compresses files.
+             <code>
+             void Compress()
+             {
+            		// create zip file
+            		C1Zip zip = new C1Zip();
+            		zip.Create(zipFileName);
+             
+            		// connect event handler
+            		zip.Progress += new ZipProgressEventHandler(zip_Progress);
+             
+            		// add files
+            		foreach (string fileName in Directory.GetFiles(path, "*.*"))
+            			zip.Entries.Add(fileName);
+            	}
+             
+             // print messages while files are compressed
+             void zip_Progress(object sender, ZipProgressEventArgs e)
+             {
+            		Console.WriteLine("Compressing {0}, {1:p0} done",
+            			e.FileName, e.Position/(float)e.FileLength);
+            	}
+             </code></example>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.FileName">
+      <summary>
+            Gets the name of the current zip file.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.Password">
+      <summary>
+            Gets or sets the password to use when adding or retrieving entries from the 
+            zip file.
+            </summary>
+      <remarks>
+        <para>If the <see cref="P:C1.C1Zip.C1ZipFile.Password" /> property is set to a non-empty string, any entries 
+            added to the zip file will be encrypted and protected by the password. To extract these 
+            entries later, the same password must be used.</para>
+        <para>The password applies to all entries from the moment it is set. If you set the 
+            password to a non-empty string and then add several entries to the zip file, all
+            entries will use the same password.</para>
+        <para>Although <b>C1Zip</b> supports Unicode characters in passwords, several popular zip 
+            utilities do not. To ensure your encrypted zip files can be opened with third-party
+            utilities, use passwords that consist of ASCII characters only.</para>
+      </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.Comment">
+      <summary>
+            Gets or sets a comment associated with the current zip file.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.CompressionLevel">
+      <summary>
+            Gets or sets the compression level to use when adding entries to the zip file.
+            </summary>
+      <remarks>
+            Higher compression settings create smaller files, but take longer to process. The
+            default setting (<see cref="F:C1.C1Zip.CompressionLevelEnum.DefaultCompression" />) provides 
+            a good trade-off between compression and speed.
+            </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.Entries">
+      <summary>
+            Gets a <see cref="T:C1.C1Zip.C1ZipEntryCollection" /> that contains the entries in the zip file.
+            </summary>
+      <remarks>
+            The <see cref="P:C1.C1Zip.C1ZipFile.Entries" /> collection is used to enumerate the entries in the zip file,
+            and also to add, remove, and expand entries.
+            </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.OverwriteReadOnly">
+      <summary>
+            Determines whether the component should overwrite read-only files when extracting 
+            entries from the zip file.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.OverwriteHidden">
+      <summary>
+            Determines whether the component should overwrite hidden files when extracting 
+            entries from the zip file.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.OverwriteSystem">
+      <summary>
+            Determines whether the component should overwrite system files when extracting 
+            entries from the zip file.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.UseUtf8Encoding">
+      <summary>
+            Determines whether file names and comments should be stored in UTF8 format.
+            </summary>
+      <remarks>
+        <para>The Zip specification does not specify what character encoding to be used for the 
+            embedded file names and comments. The original IBM PC character encoding set, 
+            commonly referred to as IBM Code Page 437, is supposed to be the only encoding supported.
+            Because of this, some zip utilities will not allow storing file names or comments with 
+            Unicode characters. Others do allow it, but those file names and comments may not be
+            read correctly by other utilities.</para>
+        <para>Setting the <b>UseUtf8Encoding</b> to true causes C1Zip to store and retrieve
+            file names and comments using the Utf8 encoding, which allows Unicode characters. The
+            caveat is that Unicode file names may not be read correctly by other zip utilities.</para>
+      </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.MemoryThreshold">
+      <summary>
+            Gets or sets the size of the largest stream to be compressed in memory.
+            </summary>
+      <remarks>
+        <para>
+          <see cref="T:C1.C1Zip.C1ZipFile" /> compresses entries into temporary streams before
+            adding them to the zip file.</para>
+        <para>Entries with fewer than <see cref="P:C1.C1Zip.C1ZipFile.MemoryThreshold" /> bytes are compressed
+            using a temporary memory stream.</para>
+        <para>Entries with more than <see cref="P:C1.C1Zip.C1ZipFile.MemoryThreshold" /> bytes are compressed
+            using a temporary file. You can control the location of the temporary file using
+            the <see cref="P:C1.C1Zip.C1ZipFile.TempFileName" /> property.</para>
+      </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZipFile.TempFileName">
+      <summary>
+            Gets or sets the name of the temporary file to use when adding entries to the zip file.
+            </summary>
+      <remarks>
+        <para>
+          <see cref="T:C1.C1Zip.C1ZipFile" /> creates temporary streams while adding entries to a zip file.
+            These temporary streams can be memory-based or disk-based, depending on the size of the
+            entry and on the setting of the <see cref="P:C1.C1Zip.C1ZipFile.MemoryThreshold" /> property.</para>
+            If a temporary file is used, <see cref="T:C1.C1Zip.C1ZipFile" /> you can control its location by 
+            setting the <see cref="P:C1.C1Zip.C1ZipFile.TempFileName" /> property. If you don't select a path for the 
+            temporary file, <see cref="T:C1.C1Zip.C1ZipFile" /> will create one automatically using the 
+            <see cref="M:System.IO.Path.GetTempFileName" /> method.
+            </remarks>
+    </member>
+    <member name="T:C1.C1Zip.ZipProgressEventHandler">
+      <summary>
+            Represents the method that will handle the <see cref="E:C1.C1Zip.C1ZipFile.Progress" /> event of a 
+            <see cref="T:C1.C1Zip.C1ZipFile" />.
+            </summary>
+    </member>
+    <member name="T:C1.C1Zip.ZipProgressEventArgs">
+      <summary>
+            Provides data for the <see cref="E:C1.C1Zip.C1ZipFile.Progress" /> event of a 
+            <see cref="T:C1.C1Zip.C1ZipFile" />.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.ZipProgressEventArgs.FileName">
+      <summary>
+            Gets the name of the file being compressed or expanded.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.ZipProgressEventArgs.FileLength">
+      <summary>
+            Gets the length of the file being compressed or expanded.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.ZipProgressEventArgs.FileLengthLong">
+      <summary>
+            Gets the length of the file being compressed or expanded.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.ZipProgressEventArgs.Cancel">
+      <summary>
+            Set to true to cancel the current operation.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.ZipProgressEventArgs.Position">
+      <summary>
+            Gets the current position into the stream.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.ZipProgressEventArgs.PositionLong">
+      <summary>
+            Gets the current position into the stream.
+            </summary>
+    </member>
+    <member name="T:C1.C1Zip.ZipFileException">
+      <summary>
+            Exception thrown when trying to open an invalid Zip file.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.ZipFileException.#ctor(System.String)">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.C1Zip.ZipFileException" />.
+            </summary>
+      <param name="msg">Message that describes the exception.</param>
+    </member>
+    <member name="M:C1.C1Zip.ZipFileException.#ctor(System.String,System.String)">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.C1Zip.ZipFileException" />.
+            </summary>
+      <param name="msg">Message that describes the exception.</param>
+      <param name="filename">Name of the file that caused the exception.</param>
+    </member>
+    <member name="M:C1.C1Zip.ZipFileException.#ctor(System.String,System.String,System.Exception)">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.C1Zip.ZipFileException" />.
+            </summary>
+      <param name="msg">Message that describes the exception.</param>
+      <param name="filename">Name of the file that caused the exception.</param>
+      <param name="innerException">Inner exception.</param>
+    </member>
+    <member name="T:C1.C1Zip.C1ZStreamReader">
+      <summary>
+            Decompresses data from .NET streams.
+            </summary>
+      <remarks>
+        <para>To decompress data from a compressed stream, create a <see cref="T:C1.C1Zip.C1ZStreamReader" /> object 
+            passing the compressed stream to the <see cref="T:C1.C1Zip.C1ZStreamReader" /> constructor.</para>
+        <para>Then read the data from the <see cref="T:C1.C1Zip.C1ZStreamReader" /> using the <see cref="M:C1.C1Zip.C1ZStreamReader.Read(System.Byte[],System.Int32,System.Int32)" />
+            method, or create a <see cref="T:System.IO.StreamReader" /> on the <see cref="T:C1.C1Zip.C1ZStreamReader" />. 
+            The second option is indicated when you want to read formatted data.</para>
+      </remarks>
+      <example>
+            The code below decompresses a string that was stored into a memory stream object:
+            <code>
+            public string ExpandString(byte[] buffer)
+            {
+            	// turn buffer into a memory stream
+            	var ms = new MemoryStream(buffer);
+            	
+            	// attach decompressor stream to memory stream
+            	var sr = new C1ZStreamReader(ms);
+            	
+            	// read uncompressed data
+            	var reader = new StreamReader(sr);
+            	return reader.ReadToEnd();
+            }
+            </code></example>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.#ctor(System.IO.Stream)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamReader" /> class.
+            </summary>
+      <param name="baseStream">Input stream that contains the compressed data.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.#ctor(System.IO.Stream,System.Boolean,System.Int32)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamReader" /> class.
+            </summary>
+      <param name="baseStream">Input stream that contains the compressed data.</param>
+      <param name="zip">Specifies whether the compressed stream was created in zip format.</param>
+      <param name="sizeCompressed">Specifies the number of compressed bytes to read from the stream.</param>
+      <remarks>
+            The <paramref name="sizeCompressed" /> parameter is needed only when a single stream contains
+            several compressed streams (in zip files for example). If this parameter is not 
+            specified, it is assumed that the stream contains a single stream of compressed data.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.#ctor(System.IO.Stream,System.Boolean)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamReader" /> class.
+            </summary>
+      <param name="baseStream">Input stream that contains the compressed data.</param>
+      <param name="zip">Specifies whether the compressed stream was created in zip format.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.#ctor(System.IO.Stream,System.Boolean,System.Boolean)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamReader" /> class.
+            </summary>
+      <param name="baseStream">Input stream that contains the compressed data.</param>
+      <param name="header">Specifies whether the compressed stream contains header information (should be False for streams in zip files).</param>
+      <param name="crc32">Specifies whether the compressed stream contains a CRC32 checksum (should be True for streams in zip files).</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.#ctor(System.IO.Stream,System.Boolean,System.Int32,System.Int32)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamReader" /> class.
+            </summary>
+      <param name="baseStream">Input stream that contains the compressed data.</param>
+      <param name="zip">Specifies whether the compressed stream was created in zip format.</param>
+      <param name="sizeCompressed">Specifies the number of compressed bytes to read from the stream.</param>
+      <param name="method">Specifies the method that was used to compress the stream.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.#ctor(System.IO.Stream,System.Boolean,System.Int64,System.Int32)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamReader" /> class.
+            </summary>
+      <param name="baseStream">Input stream that contains the compressed data.</param>
+      <param name="zip">Specifies whether the compressed stream was created in zip format.</param>
+      <param name="sizeCompressed">Specifies the number of compressed bytes to read from the stream.</param>
+      <param name="method">Specifies the method that was used to compress the stream.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.Seek(System.Int64,System.IO.SeekOrigin)">
+      <summary>
+            Not supported.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.SetLength(System.Int64)">
+      <summary>
+            Sets the number of compressed bytes to read from the underlying stream.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.Read(System.Byte[],System.Int32,System.Int32)">
+      <summary>
+            Reads a sequence of bytes from the underlying compressed stream, decompressing them into
+            a buffer, then advances the position within the stream by the number of bytes read.
+            </summary>
+      <param name="buf">An array of bytes. When this method returns, <paramref name="buf" /> contains the specified byte array with the values between <paramref name="offset" />and (<paramref name="offset" /> + <paramref name="count" />) replaced by the uncompressed data read from the stream.</param>
+      <param name="offset">The zero-based byte offset in <paramref name="buf" /> at which to begin storing the data read from the current stream.</param>
+      <param name="count">The maximum number of (decompressed) bytes to be read from the current stream.</param>
+      <returns>The total number of bytes read into the buffer. This may be less than the number of bytes 
+            requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
+            </returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.ReadByte">
+      <summary>
+            Reads a byte from the stream and advances the position within the stream 
+            by one byte, or returns -1 if at the end of the stream.
+            </summary>
+      <returns>The unsigned byte cast to an <see cref="T:System.Int32" />, or -1 if at 
+            the end of the stream.
+            </returns>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.Write(System.Byte[],System.Int32,System.Int32)">
+      <summary>
+            This method is overridden and is not supported by the <see cref="T:C1.C1Zip.C1ZStreamReader" /> class.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.Flush">
+      <summary>
+            Clears all buffers for this stream and causes any buffered data to be written to the underlying 
+            stream.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamReader.Close">
+      <summary>
+        <para>Closes the current stream compressor and flushed any pending data into the base stream.</para>
+        <para>If the <see cref="P:C1.C1Zip.C1ZStreamReader.OwnsBaseStream" /> property is set to True (the default value), 
+            then this method also closes the base stream and releases any resources (such as sockets 
+            and file handles) associated with it.</para>
+      </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.BaseStream">
+      <summary>
+            Gets the underlying stream that contains the compressed data.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.OwnsBaseStream">
+      <summary>
+            Gets or sets whether calling the <see cref="M:C1.C1Zip.C1ZStreamReader.Close" /> method will also
+            close the underlying stream (see <see cref="P:C1.C1Zip.C1ZStreamReader.BaseStream" />).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.SizeCompressed">
+      <summary>
+            Gets the number of bytes in the stream (compressed bytes).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.SizeUncompressed">
+      <summary>
+            Gets the number of bytes that were compressed into the stream (uncompressed bytes).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.SizeCompressedLong">
+      <summary>
+            Gets the number of bytes in the stream (compressed bytes).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.SizeUncompressedLong">
+      <summary>
+            Gets the number of bytes that were compressed into the stream (uncompressed bytes).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.ZStream">
+      <summary>
+            Gets the ZStream instance wrapped by this <see cref="T:C1.C1Zip.C1ZStreamWriter" />.
+            </summary>
+      <remarks>
+            This property is useful only in advanced applications that need to customize 
+            the low-level behavior of the compressor. It is not needed in common applications.
+            </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.CanRead">
+      <summary>
+            Always returns True.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.CanWrite">
+      <summary>
+            Always returns False.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.CanSeek">
+      <summary>
+            Always returns False.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.Length">
+      <summary>
+            Gets the length of the compressed stream if it is known (or -1 if the
+            length of the compressed stream is unknown).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamReader.Position">
+      <summary>
+            Gets the position within the stream (read-only).
+            </summary>
+    </member>
+    <member name="T:C1.C1Zip.CompressionLevelEnum">
+      <summary>
+            Specifies the level of compression to be applied when adding entries to a <see cref="T:C1.C1Zip.C1ZipFile" />.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.CompressionLevelEnum.NoCompression">
+      <summary>
+            No Compression.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.CompressionLevelEnum.BestSpeed">
+      <summary>
+            Low compression, highest speed.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.CompressionLevelEnum.BestCompression">
+      <summary>
+            Highest compression, low speed.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.CompressionLevelEnum.DefaultCompression">
+      <summary>
+            High compression, high speed.
+            </summary>
+    </member>
+    <member name="T:C1.C1Zip.C1ZStreamWriter">
+      <summary>
+            Compresses data into .NET Streams.
+            </summary>
+      <remarks>
+        <para>To compress data into a stream, create a <see cref="T:C1.C1Zip.C1ZStreamWriter" /> object 
+            passing the stream to the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> constructor.</para>
+        <para>Then write the data into the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> using the <see cref="M:C1.C1Zip.C1ZStreamWriter.Write(System.Byte[],System.Int32,System.Int32)" />
+            method, or create a <see cref="T:System.IO.StreamWriter" /> on the <see cref="T:C1.C1Zip.C1ZStreamWriter" />. 
+            The second option is indicated when you want to write formatted data.</para>
+        <para>When you are done writing the data, call the <see cref="M:C1.C1Zip.C1ZStreamWriter.Close" /> method to
+            flush the data and close the underlying stream.</para>
+      </remarks>
+      <example>
+            The code below compresses a string into a memory stream:
+            <code>
+            public byte[] CompressString(string str)
+            {
+            	// open memory stream
+            	var ms = new MemoryStream();
+            	
+            	// attach compressor stream to memory stream
+            	var sw = new C1ZStreamWriter(ms);
+            	
+            	// write data into compressor stream
+            	var writer = new StreamWriter(sw);
+            	writer.Write(str);
+            	
+            	// flush any pending data
+            	writer.Flush();
+            	
+            	// return the memory buffer
+            	return ms.ToArray();
+            }
+            </code></example>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.#ctor(System.IO.Stream)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> class.
+            </summary>
+      <param name="baseStream">Output stream that will contain the compressed data.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.#ctor(System.IO.Stream,System.Boolean)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> class.
+            </summary>
+      <param name="baseStream">Output stream that will contain the compressed data.</param>
+      <param name="zip">Specifies whether the compressed stream should be compatible with zip files.</param>
+      <remarks>
+        <para>Streams in zip files are different from regular zlib streams in two aspects:</para>
+        <para>(1) zip streams do not contain any local header information (the information is stored in the zip file headers instead) and</para>
+        <para>(2) zip streams use a CRC32 checksum instead of the adler32 checksum used by zlib streams.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.#ctor(System.IO.Stream,System.Boolean,System.Boolean)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> class.
+            </summary>
+      <param name="baseStream">Output stream that will contain the compressed data.</param>
+      <param name="header">Include header information in compressed stream (should be False for streams in zip files).</param>
+      <param name="crc32">Include CRC32 checksum in compressed stream (should be True for streams in zip files).</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.#ctor(System.IO.Stream,C1.C1Zip.CompressionLevelEnum)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> class.
+            </summary>
+      <param name="baseStream">Output stream that will contain the compressed data.</param>
+      <param name="level">Compression level to use when compressing data.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.#ctor(System.IO.Stream,C1.C1Zip.CompressionLevelEnum,System.Boolean)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> class.
+            </summary>
+      <param name="baseStream">Output stream that will contain the compressed data.</param>
+      <param name="level">Compression level to use when compressing data.</param>
+      <param name="zip">Specifies whether the compressed stream should be compatible with zip files.</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.#ctor(System.IO.Stream,C1.C1Zip.CompressionLevelEnum,System.Boolean,System.Boolean)">
+      <summary>
+            Initializes a new instance of the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> class.
+            </summary>
+      <param name="baseStream">Output stream that will contain the compressed data.</param>
+      <param name="level">Compression level to use when compressing data.</param>
+      <param name="header">Include header information in compressed stream (should be False for streams in zip files).</param>
+      <param name="crc32">Include CRC32 checksum in compressed stream (should be True for streams in zip files).</param>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.Seek(System.Int64,System.IO.SeekOrigin)">
+      <summary>
+            Not supported.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.SetLength(System.Int64)">
+      <summary>
+            Not supported.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.Read(System.Byte[],System.Int32,System.Int32)">
+      <summary>
+            Not supported.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.Write(System.Byte[],System.Int32,System.Int32)">
+      <summary>
+            Writes a sequence of bytes to the current stream and advances the current 
+            position within this stream by the number of bytes written.
+            </summary>
+      <param name="buf">An array of bytes. This method copies <paramref name="count" /> bytes from
+            <paramref name="buf" /> to the current stream.</param>
+      <param name="offset">The zero-based byte offset in <paramref name="buf" /> at which to begin copying bytes to the current stream.</param>
+      <param name="count">The number of bytes to be written to the current stream.</param>
+      <remarks>
+            The data is compressed as it is written into the stream. Writing <paramref name="count" /> bytes
+            into the stream will usually advance the position by a number smaller than <paramref name="count" />.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.Flush">
+      <summary>
+            Clears all buffers for this stream and causes any buffered data to be written to the underlying 
+            stream.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.Close">
+      <summary>
+        <para>Closes the current stream compressor and flushed any pending data into the base stream.</para>
+        <para>If the <see cref="P:C1.C1Zip.C1ZStreamWriter.OwnsBaseStream" /> property is set to True (the default value), 
+            then this method also closes the base stream and releases any resources (such as sockets 
+            and file handles) associated with it.</para>
+      </summary>
+    </member>
+    <member name="M:C1.C1Zip.C1ZStreamWriter.WriteByte(System.Byte)">
+      <summary>
+            Writes a byte to the current position in the stream and advances the position within the stream by one byte.
+            </summary>
+      <param name="value">Value to be written to the stream.</param>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.BaseStream">
+      <summary>
+            Gets the underlying stream that receives the compressed data.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.OwnsBaseStream">
+      <summary>
+            Gets or sets whether calling the <see cref="M:C1.C1Zip.C1ZStreamWriter.Close" /> method will also
+            close the underlying stream (see <see cref="P:C1.C1Zip.C1ZStreamWriter.BaseStream" />).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.Checksum">
+      <summary>
+            Gets the checksum value used to check the integrity of the stream.
+            </summary>
+      <remarks>
+            The checksum used may be an Adler or crc32 value depending on how
+            the <see cref="T:C1.C1Zip.C1ZStreamWriter" /> was created.
+            </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.SizeCompressed">
+      <summary>
+            Gets the number of bytes in the stream (compressed bytes).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.SizeUncompressed">
+      <summary>
+            Gets the number of bytes that were compressed into the stream (uncompressed bytes).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.SizeCompressedLong">
+      <summary>
+            Gets the number of bytes in the stream (compressed bytes).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.SizeUncompressedLong">
+      <summary>
+            Gets the number of bytes that were compressed into the stream (uncompressed bytes).
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.ZStream">
+      <summary>
+            Gets the ZStream instance wrapped by this <see cref="T:C1.C1Zip.C1ZStreamWriter" />.
+            </summary>
+      <remarks>
+            This property is useful only in advanced applications that need to customize 
+            the low-level behavior of the compressor. It is not needed in common applications.
+            </remarks>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.CanRead">
+      <summary>
+            Always returns False.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.CanWrite">
+      <summary>
+            Always returns True.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.CanSeek">
+      <summary>
+            Always returns False.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.Length">
+      <summary>
+            Returns the length of the underlying stream, in bytes.
+            </summary>
+    </member>
+    <member name="P:C1.C1Zip.C1ZStreamWriter.Position">
+      <summary>
+            Gets the position within the stream (read-only).
+            </summary>
+    </member>
+    <member name="T:C1.C1Zip.ZLib.ZStream">
+      <summary>
+        <b>ZStream</b> is the most flexible and hardest to use class in the <b>C1.C1Zip</b> assembly.
+            It contains a C# implementation of ZLIB's zstream object, which is a general purpose 
+            compressor and decompressor.
+            </summary>
+      <remarks>
+        <para>In most cases, you should be able to use the <see cref="T:C1.C1Zip.C1ZStreamReader" /> 
+            and <see cref="T:C1.C1Zip.C1ZStreamWriter" /> classes instead of <b>ZStream</b>. 
+            These classes provide friendly and easy-to-use wrappers that hide the ZLIB complexity.</para>
+        <para>
+            Use <b>ZStream</b> only if you are familiar with ZLIB and need control over 
+            the low-level aspects of the data compression or decompression process 
+            (e.g., to provide your own buffers or compression dictionaries).</para>
+        <para>
+            If you choose to use <b>ZStream</b> directly and need technical support, 
+            please check out the detailed documentation, sample, and articles available 
+            at http://www.info-zip.org/ or http://www.gzip.org/, the official zlib sites.</para>
+        <para>
+            ZLIB is an open-source, patent-free library created by Jean-Loup Gailly and Mark Adler.</para>
+      </remarks>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_OK">
+      <summary>
+            No error.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_STREAM_END">
+      <summary>
+            End of stream detected.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_NEED_DICT">
+      <summary>
+            A preset dictionary is needed at this point.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_ERRNO">
+      <summary>
+            File error.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_STREAM_ERROR">
+      <summary>
+            Stream structure is inconsistent (input/output buffers are null for example).
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_DATA_ERROR">
+      <summary>
+            Input data is corrupted (wrong format or checksum).
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_MEM_ERROR">
+      <summary>
+            Not enough memory.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_BUF_ERROR">
+      <summary>
+            No progress possible or no room in output buffer.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.Z_VERSION_ERROR">
+      <summary>
+            Incompatible ZLIB version.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.next_in">
+      <summary>
+            Input buffer.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.next_in_index">
+      <summary>
+            Position of cursor into input buffer.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.avail_in">
+      <summary>
+            Number of bytes available in the input buffer.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.total_in">
+      <summary>
+            Total number of input bytes read so far.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.next_out">
+      <summary>
+            Output buffer.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.next_out_index">
+      <summary>
+            Position of cursor into the output buffer.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.avail_out">
+      <summary>
+            Number of free bytes remaining in output buffer.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.total_out">
+      <summary>
+            Total number of bytes output so far.
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.msg">
+      <summary>
+            Description of the last error (null if no errors).
+            </summary>
+    </member>
+    <member name="F:C1.C1Zip.ZLib.ZStream.adler">
+      <summary>
+            Current checksum value (Adler or CRC32).
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.#ctor">
+      <summary>
+            Initializes a new instance of the <b>ZStream</b> class using an Adler checksum.
+            </summary>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.#ctor(System.Boolean)">
+      <summary>
+            Initializes a new instance of the <b>ZStream</b> class.
+            </summary>
+      <param name="crc32">
+        <b>True</b> to use a CRC32 checksum, <b>False</b> to use an Adler checksum.</param>
+      <remarks>
+            CRC32 checksums are the standard used in zip files. Adler checksums are the default
+            used by ZLIB. Adler checksums are faster to calculate, but are not compatible with the zip format.
+            </remarks>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.inflateInit">
+      <summary>
+            Initializes the internal stream state for decompression.
+            </summary>
+      <returns>Zero on success, an error code on failure.</returns>
+      <remarks>
+        <para>The fields <see cref="F:C1.C1Zip.ZLib.ZStream.next_in" /> and <see cref="F:C1.C1Zip.ZLib.ZStream.avail_in" /> must be 
+            initialized before by the caller.</para>
+        <para>
+          <b>inflateInit</b> does not perform any decompression apart from reading the 
+            zlib header if present: data decompression is done by the <see cref="M:C1.C1Zip.ZLib.ZStream.inflate(System.Int32)" /> 
+            method. Therefore, the <b>next_in</b> and <b>avail_in</b> may be modified, but 
+            <b>next_out</b> and <b>avail_out</b> are unchanged.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.inflateInit(System.Int32)">
+      <summary>
+            Initializes the internal stream state for decompression.
+            </summary>
+      <param name="bits">Size of the LZ77 sliding compression window in bits (the default value is 15 bits).</param>
+      <returns>Zero on success, an error code on failure.</returns>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.inflate(System.Int32)">
+      <summary>
+            Decompresses as much data as possible until the input buffer is exhausted or 
+            the output buffer is full.
+            </summary>
+      <param name="flush">How to flush data into the output buffer (default value is 2).</param>
+      <returns>
+        <b>Z_OK</b> if some progress has been made (more input processed or more output produced), 
+            <b>Z_STREAM_END</b> if the end of the compressed data has been reached and all 
+            uncompressed output has been produced, 
+            <b>Z_NEED_DICT</b> if a preset dictionary is needed at this point, 
+            <b>Z_DATA_ERROR</b> if the input data was corrupted (input stream not conforming to 
+            the zlib format or incorrect checksum), 
+            <b>Z_STREAM_ERROR</b> if the stream structure was inconsistent (for example if 
+            <b>next_in</b> or <b>next_out</b> was null), 
+            <b>Z_MEM_ERROR</b> if there was not enough memory,
+            <b>Z_BUF_ERROR</b> if no progress is possible or if there was not enough room in the 
+            output buffer when <b>Z_FINISH</b> is used.
+            </returns>
+      <remarks>
+        <para>
+          <b>inflate</b> performs one or both of the following actions:</para>
+        <para>1. Decompress more input starting at <b>next_in</b> and update <b>next_in</b>
+            and <b>avail_in</b> accordingly. If not all input can be processed (because there 
+            is not enough room in the output buffer), <b>next_in</b> is updated and processing 
+            will resume at this point for the next call to inflate.</para>
+        <para>2. Provide more output starting at <b>next_out</b> and update <b>next_out</b>
+            and <b>avail_out</b> accordingly. <b>inflate</b> provides as much output as 
+            possible, until there is no more input data or no more space in the output buffer.</para>
+        <para>Before the call to inflate, the application should ensure that at least one of the 
+            actions is possible, by providing more input and/or consuming more output, and 
+            updating the <b>next_*</b> and <b>avail_*</b> values accordingly.</para>
+        <para>If <b>inflate</b> returns Zero and <b>avail_out</b> == 0, it must be called again 
+            after making room in the output buffer because there might be more output pending.</para>
+        <para>The application can consume the uncompressed output when it wants, for example when 
+            the output buffer is full (<b>avail_out</b> == 0), or after each call of <b>inflate</b>.</para>
+        <para>This method may introduce some output latency (reading input without producing 
+            any output) except when forced to flush.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.inflateEnd">
+      <summary>
+            Frees all dynamically allocated data structures for this stream, 
+            discards any unprocessed input, and does not flush any pending output.
+            </summary>
+      <returns>Zero on success, an error code on failure.</returns>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.inflateSync">
+      <summary>
+            Skips invalid compressed data until a full flush point is found, 
+            or until all available input is skipped. No output is provided.
+            </summary>
+      <returns>Zero on success, an error code on failure.</returns>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.inflateSetDictionary(System.Byte[],System.Int32)">
+      <summary>
+            Initializes the decompression dictionary from the given uncompressed byte sequence.
+            </summary>
+      <param name="dictionary">Data in the dictionary.</param>
+      <param name="dictLength">Number of bytes in the dictionary.</param>
+      <returns>Zero on success, an error code on failure.</returns>
+      <remarks>
+        <para>This method must be called immediately after a call of <see cref="M:C1.C1Zip.ZLib.ZStream.inflate(System.Int32)" /> 
+            if this call returned <b>Z_NEED_DICT</b>. The dictionary chosen by the compressor 
+            can be determined from the <b>Adler32</b> value returned by this call to <b>inflate</b>.</para>
+        <para>The compressor and decompressor must use exactly the same dictionary 
+            (see the <see cref="M:C1.C1Zip.ZLib.ZStream.deflateSetDictionary(System.Byte[],System.Int32)" /> method).</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.deflateInit(System.Int32)">
+      <summary>
+            Initializes the internal stream state for compression.
+            </summary>
+      <param name="level">Compression level between zero and nine (0-9).</param>
+      <returns>Zero on success, an error code on failure.</returns>
+      <remarks>
+        <para>Compression level 1 gives best speed, 9 gives best compression.</para>
+        <para>Compression level zero gives no compression at all (the input data is simply copied a block at a time).</para>
+        <para>The default compression level is 6, which provides a compromise between speed and compression.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.deflateInit(System.Int32,System.Int32)">
+      <summary>
+            Initializes the internal stream state for compression.
+            </summary>
+      <param name="level">Compression level between zero and nine (0-9).</param>
+      <param name="bits">Size of the LZ77 sliding compression window in bits (the default value is 15 bits).</param>
+      <returns>Zero on success, an error code on failure.</returns>
+      <remarks>
+        <para>Compression level 1 gives best speed, 9 gives best compression.</para>
+        <para>Compression level zero gives no compression at all (the input data is simply copied a block at a time).</para>
+        <para>The default compression level is 6, which provides a compromise between speed and compression.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.deflate(System.Int32)">
+      <summary>
+            Compresses as much data as possible, and stops when the input buffer becomes empty or the 
+            output buffer becomes full.
+            </summary>
+      <param name="flush">Non-zero to force some data to be flushed into the output buffer.</param>
+      <returns>Zero on success, an error code on failure.</returns>
+      <remarks>
+        <para>
+          <b>deflate</b> performs one or both of the following actions:</para>
+        <para>1. Compress more input starting at <b>next_in</b> and update <b>next_in</b> and 
+            <b>avail_in</b> accordingly. If not all input can be processed (because there is not 
+            enough room in the output buffer), <b>next_in</b> and <b>avail_in</b> are updated and 
+            processing will resume at this point for the next call to <b>deflate</b>.</para>
+        <para>2. Provide more output starting at <b>next_out</b> and update <b>next_out</b> and 
+            <b>avail_out</b> accordingly. This action is forced if the parameter <paramref name="flush" /> is 
+            non zero. Forcing flush frequently degrades the compression ratio, so this parameter 
+            should be set only when necessary (in interactive applications). Some output may be 
+            provided even if flush is not set</para>
+        <para>This method may introduce some output latency (reading input without producing 
+            any output) except when forced to flush.</para>
+        <para>If <b>deflate</b> returns with <b>avail_out</b> == 0, this method must be called 
+            again with the same value of the <paramref name="flush" /> parameter and more output space 
+            until the flush is complete (<b>deflate</b> returns with <b>avail_out</b> != 0).</para>
+      </remarks>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.deflateEnd">
+      <summary>
+            Frees all dynamically allocated data structures for this stream, 
+            discards any unprocessed input, and does not flush any pending output.
+            </summary>
+      <returns>Zero on success, an error code on failure.</returns>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.deflateParams(System.Int32,System.Int32)">
+      <summary>
+            Dynamically updates the compression level and compression strategy.
+            </summary>
+      <param name="level">Compression level between zero and nine (0-9).</param>
+      <param name="strategy">Compression strategy (0-2).</param>
+      <returns>
+      </returns>
+    </member>
+    <member name="M:C1.C1Zip.ZLib.ZStream.deflateSetDictionary(System.Byte[],System.Int32)">
+      <summary>
+            Initializes the compression dictionary from the given byte sequence without 
+            producing any compressed output.
+            </summary>
+      <param name="dictionary">Data in the dictionary.</param>
+      <param name="dictLength">Number of bytes in the dictionary.</param>
+      <returns>Zero on success, an error code on failure.</returns>
+      <remarks>
+        <para>This method must be called immediately after <see cref="M:C1.C1Zip.ZLib.ZStream.deflateInit(System.Int32)" />,
+            before any call to <see cref="M:C1.C1Zip.ZLib.ZStream.deflate(System.Int32)" />.</para>
+        <para>The compressor and decompressor must use exactly the same dictionary 
+            (see <see cref="M:C1.C1Zip.ZLib.ZStream.inflateSetDictionary(System.Byte[],System.Int32)" />).</para>
+      </remarks>
+    </member>
+    <member name="T:C1.C1Zip.ZLib.ZStreamException">
+      <summary>
+            The exception that is thrown when reading or writing to a compressed stream fails.
+            </summary>
+    </member>
+  </members>
+</doc>

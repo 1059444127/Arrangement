@@ -1,0 +1,2429 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>C1.Win.Olap.2</name>
+  </assembly>
+  <members>
+    <member name="T:C1.Olap.Subtotal">
+      <summary>
+            Specifies the type of subtotal (aggregate) statistic to calculate.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.Sum">
+      <summary>
+            Gets the sum of a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.Count">
+      <summary>
+            Gets the number of values in a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.Average">
+      <summary>
+            Gets the average of a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.Max">
+      <summary>
+            Gets the maximum value in a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.Min">
+      <summary>
+            Gets the minimum value in a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.First">
+      <summary>
+            Gets the first value in a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.Last">
+      <summary>
+            Gets the last value in a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.Var">
+      <summary>
+            Gets the sample variance of a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.Std">
+      <summary>
+            Gets the sample standard deviation of a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.VarP">
+      <summary>
+            Gets the population variance of a group.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.Subtotal.StdP">
+      <summary>
+            Gets the population standard deviation of a group.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.ShowTotals">
+      <summary>
+            Specifies whether to include totals in the output table.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ShowTotals.None">
+      <summary>
+            Do not show any totals.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ShowTotals.GrandTotals">
+      <summary>
+            Show grand totals.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ShowTotals.Subtotals">
+      <summary>
+            Show subtotals and grand totals.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.C1OlapEngine">
+      <summary>
+            Class that tabulates data in a <see cref="P:C1.Olap.C1OlapEngine.DataSource" /> according to lists of 
+            fields and creates a <see cref="T:System.Data.DataTable" /> exposed by the <see cref="P:C1.Olap.C1OlapEngine.OlapTable" /> property.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Olap.C1OlapEngine" />.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.TransposeFields">
+      <summary>
+            Transposes the fields in the current view so rows become columns and
+            columns become rows.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.GetViewTitle">
+      <summary>
+            Gets a string with a title describing the current view.
+            </summary>
+      <returns>A string describing the current view.</returns>
+      <remarks>
+            The string includes the names of the fields currently active and 
+            can be used as a caption for charts and reports.
+            </remarks>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.GetViewTitle(System.String,System.String)">
+      <summary>
+            Gets a localized string with a title describing the current view.
+            </summary>
+      <param name="by">String to use as a separator between value and row/column field names.</param>
+      <param name="and">String to use as a separator between row and column field names.</param>
+      <returns>A string describing the current view.</returns>
+      <remarks>
+            The string includes the names of the fields currently active and 
+            can be used as a caption for charts and reports.
+            </remarks>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.BeginUpdate">
+      <summary>
+            Suspend automatic updates to the output table while defining the Olap view.
+            </summary>
+      <remarks>
+            The <see cref="T:C1.Olap.C1OlapEngine" /> updates the output table whenever the 
+            fields that make up the Olap view change. 
+            Before making multiple changes (such as defining a new Olap view), 
+            you can increase performance by enclosing the changes between calls to
+            <see cref="M:C1.Olap.C1OlapEngine.BeginUpdate" /> and <see cref="M:C1.Olap.C1OlapEngine.EndUpdate" />.
+            </remarks>
+      <example>
+            The code below shows how to define a new Olap view efficiently by 
+            enclosing the changes between calls to <see cref="M:C1.Olap.C1OlapEngine.BeginUpdate" /> and 
+            <see cref="M:C1.Olap.C1OlapEngine.EndUpdate" />.
+            <code>
+            // set data source (populates Fields list)
+            olap.DataSource = GetDataTable();
+            
+            // prevent updates while building Olap view
+            olap.BeginUpdate();
+            
+            // show countries in rows
+            olap.RowFields.Add("Country");
+            
+            // show categories and products in columns
+            olap.ColumnFields.Add("Category");
+            olap.ColumnFields.Add("Product");
+            
+            // show total sales in cells
+            olap.ValueFields.Add("Sales");
+            
+            // done defining the view
+            olap.EndUpdate();
+            </code></example>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.EndUpdate">
+      <summary>
+            Restore automatic updates to the output table after the Olap view has been defined.
+            </summary>
+      <example>
+            For a complete example, please refer to the <see cref="M:C1.Olap.C1OlapEngine.BeginUpdate" /> method documentation.
+            </example>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.OnUpdating(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Olap.C1OlapEngine.Updating" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.OnUpdated(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Olap.C1OlapEngine.Updated" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.OnLoadedFields(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Olap.C1OlapEngine.LoadedFields" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.Update">
+      <summary>
+            Causes the <see cref="T:C1.Olap.C1OlapEngine" /> to rebuild the output
+            table exposed by the <see cref="P:C1.Olap.C1OlapEngine.OlapTable" /> property.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.GetOlapKey(System.Data.DataColumn)">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapKey" /> associated with a <see cref="T:System.Data.DataColumn" />
+            on an Olap table.
+            </summary>
+      <param name="column">
+        <see cref="T:System.Data.DataColumn" /> for which the key should be retrieved.</param>
+      <returns>The <see cref="T:C1.Olap.C1OlapKey" /> associated with the <paramref name="column" />.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.GetOlapKey(System.Data.DataRow)">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapKey" /> associated with a <see cref="T:System.Data.DataRow" />
+            on an Olap table.
+            </summary>
+      <param name="row">
+        <see cref="T:System.Data.DataRow" /> for which the key should be retrieved.</param>
+      <returns>The <see cref="T:C1.Olap.C1OlapKey" /> associated with the <paramref name="row" />.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.GetDetail(System.Data.DataRow,System.Data.DataColumn)">
+      <summary>
+            Gets a list of objects in the raw data source that define the content 
+            of a specific cell in the output table exposed by the <see cref="P:C1.Olap.C1OlapEngine.OlapTable" /> 
+            property.
+            </summary>
+      <param name="row">
+        <see cref="T:System.Data.DataRow" /> that contains the Olap cell.</param>
+      <param name="column">
+        <see cref="T:System.Data.DataColumn" /> that contains the Olap cell.</param>
+      <returns>A list of objects in the raw data source that define the
+            content of the specified Olap cell.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.GetDetail(System.Data.DataRow,System.String)">
+      <summary>
+            Gets a list of objects in the raw data source that define the content 
+            of a specific cell in the output table exposed by the <see cref="P:C1.Olap.C1OlapEngine.OlapTable" /> 
+            property.
+            </summary>
+      <param name="row">
+        <see cref="T:System.Data.DataRow" /> that contains the Olap cell.</param>
+      <param name="columnName">Name of the column that contains the Olap cell.</param>
+      <returns>A list of objects in the raw data source that define the
+            content of the specified Olap cell.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.CancelUpdate">
+      <summary>
+            Requests cancellation of a pending request operation.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.WriteXml(System.Xml.XmlWriter)">
+      <summary>
+            Saves the current Olap view definition into an <see cref="T:System.Xml.XmlWriter" />.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the view definition will be saved.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.WriteXml(System.String)">
+      <summary>
+            Saves the current Olap view definition into an Xml file.
+            </summary>
+      <param name="path">Name of the file to save.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.ReadXml(System.Xml.XmlReader)">
+      <summary>
+            Reads an Olap view definition from an <see cref="T:System.Xml.XmlReader" />.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the view definition.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapEngine.ReadXml(System.String)">
+      <summary>
+            Reads an Olap view definition from a file.
+            </summary>
+      <param name="path">Name of the file that contains the view definition.</param>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.DataSource">
+      <summary>
+            Gets or sets the object that contains data to be analyzed.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.Fields">
+      <summary>
+            Gets the list of <see cref="T:C1.Olap.C1OlapField" /> objects exposed by 
+            the data source.
+            </summary>
+      <remarks>
+        <para>This list is created automatically whenever the <see cref="P:C1.Olap.C1OlapEngine.DataSource" />
+            property is set.</para>
+        <para>Olap views are defined by copying fields from this list to
+            the lists that define the view: <see cref="P:C1.Olap.C1OlapEngine.ValueFields" />, <see cref="P:C1.Olap.C1OlapEngine.RowFields" />,
+            <see cref="P:C1.Olap.C1OlapEngine.ColumnFields" />, and <see cref="P:C1.Olap.C1OlapEngine.FilterFields" />.</para>
+      </remarks>
+      <example>
+            The code below assigns a data source to the Olap engine and then defines
+            a view by adding fields to each of the <see cref="P:C1.Olap.C1OlapEngine.RowFields" />, 
+            <see cref="P:C1.Olap.C1OlapEngine.ColumnFields" />, and <see cref="P:C1.Olap.C1OlapEngine.ValueFields" /> lists.
+            <code>
+            // set data source (populates Fields list)
+            olap.DataSource = GetDataTable();
+            
+            // prevent updates while building Olap view
+            olap.BeginUpdate();
+            
+            // show countries in rows
+            olap.RowFields.Add("Country");
+            
+            // show categories and products in columns
+            olap.ColumnFields.Add("Category");
+            olap.ColumnFields.Add("Product");
+            
+            // show total sales in cells
+            olap.ValueFields.Add("Sales");
+            
+            // done defining the view
+            olap.EndUpdate();
+            </code></example>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.RowFields">
+      <summary>
+            Gets a list of <see cref="T:C1.Olap.C1OlapField" /> objects that define
+            the fields shown as rows in the output table.
+            </summary>
+      <remarks>
+            See the <see cref="P:C1.Olap.C1OlapEngine.Fields" /> property for details and an example.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ColumnFields">
+      <summary>
+            Gets a list of <see cref="T:C1.Olap.C1OlapField" /> objects that define
+            the fields shown as columns in the output table.
+            </summary>
+      <remarks>
+            See the <see cref="P:C1.Olap.C1OlapEngine.Fields" /> property for details and an example.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ValueFields">
+      <summary>
+            Gets a list of <see cref="T:C1.Olap.C1OlapField" /> objects that define
+            the fields summarized in the cells of the output table.
+            </summary>
+      <remarks>
+            See the <see cref="P:C1.Olap.C1OlapEngine.Fields" /> property for details and an example.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ValueField">
+      <summary>
+            Gets the first <see cref="T:C1.Olap.C1OlapField" /> in the <see cref="P:C1.Olap.C1OlapEngine.ValueFields" />
+            collection, or null if the collection is empty.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.FilterFields">
+      <summary>
+            Gets a list of <see cref="T:C1.Olap.C1OlapField" /> objects that define
+            the fields used as filters for the output table.
+            </summary>
+      <remarks>
+        <para>Fields in this list do not appear in the output table,
+            but are still used for filtering the input data.</para>
+        <para>See the <see cref="P:C1.Olap.C1OlapEngine.Fields" /> property for details and an example.</para>
+      </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.IsViewDefined">
+      <summary>
+            Gets a value that determines whether an Olap view is currently defined.
+            </summary>
+      <remarks>
+            An Olap view is defined if the <see cref="P:C1.Olap.C1OlapEngine.ValueFields" /> list is not
+            empty and either the <see cref="P:C1.Olap.C1OlapEngine.RowFields" /> or <see cref="P:C1.Olap.C1OlapEngine.ColumnFields" />
+            lists are not empty.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ShowTotalsRows">
+      <summary>
+            Gets or sets a value that determines whether the Olapoutput table
+            should include rows containing subtotals or grand totals.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ShowTotalsColumns">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should include columns containing subtotals or grand totals.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ShowKeyColumns">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should include columns containing the row keys.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ShowZeros">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should use zeros to indicate missing values.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.OlapTable">
+      <summary>
+            Gets the <see cref="T:System.Data.DataTable" /> that contains the output of
+            the Olap analysis.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.OlapDefaultView">
+      <summary>
+            Gets the default <see cref="T:System.ComponentModel.IBindingList" /> that exposes the data 
+            in the <see cref="P:C1.Olap.C1OlapEngine.OlapTable" />.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ItemCount">
+      <summary>
+            Gets the number of elements that in the data source.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.FilteredItemCount">
+      <summary>
+            Gets the number of elements that are represented in the current view.
+            </summary>
+      <remarks>
+            If no filters are active, this is the number of elements in the data source.
+            If filters are active, only elements that pass the filter are included in
+            the count.
+            </remarks>
+    </member>
+    <member name="E:C1.Olap.C1OlapEngine.Updating">
+      <summary>
+            Fires before the <see cref="T:C1.Olap.C1OlapEngine" /> starts updating 
+            the output <see cref="P:C1.Olap.C1OlapEngine.OlapTable" />.
+            </summary>
+    </member>
+    <member name="E:C1.Olap.C1OlapEngine.Updated">
+      <summary>
+            Fires after the <see cref="T:C1.Olap.C1OlapEngine" /> finishes the Olap analysis 
+            and the output <see cref="P:C1.Olap.C1OlapEngine.OlapTable" /> is ready, or the analysis operation is cancelled.
+            </summary>
+    </member>
+    <member name="E:C1.Olap.C1OlapEngine.LoadedFields">
+      <summary>
+            Fires after the <see cref="T:C1.Olap.C1OlapEngine" /> finishes loading the fields for
+            the current DataSource.
+            </summary>
+    </member>
+    <member name="E:C1.Olap.C1OlapEngine.UpdateProgressChanged">
+      <summary>
+            Fires when the update progress of the <see cref="T:C1.Olap.C1OlapEngine" /> is changed.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapEngine.ViewDefinition">
+      <summary>
+            Gets or sets the Olap view definition as an Xml string.
+            </summary>
+      <remarks>
+            This property is typically used to persist the current Olap
+            view as an application setting.
+            </remarks>
+      <example>
+        <para>The code below shows how to save an Olap view as an 
+            application setting when the application ends and how to 
+            load it when the application starts.</para>
+        <para>The code assumes that the application settings contain a 
+            string property called "OlapView".</para>
+        <code>
+            public Form1()
+            {
+              InitializeComponent();
+            
+              // load default view
+              C1OlapEngine olap = GetOlapEngine();
+              string view = Properties.Settings.Default.OlapView;
+              if (!string.IsNullOrEmpty(view))
+              {
+                olap.ViewDefinition = Properties.Settings.Default.OlapView;
+              }
+            }
+            protected override void OnClosed(EventArgs e)
+            {
+              // save current view as default
+              C1OlapEngine olap = GetOlapEngine();
+              Properties.Settings.Default.OlapView = olap.ViewDefinition;
+              Properties.Settings.Default.Save();
+            }
+            </code>
+      </example>
+    </member>
+    <member name="T:C1.Olap.C1OlapField">
+      <summary>
+            Represents a property of the items in the data source.
+            </summary>
+      <remarks>
+        <para>
+          <see cref="T:C1.Olap.C1OlapField" /> objects represent 'dimensions' in 
+            the output Olap table.</para>
+        <para>Each row and column on the output table is uniquely identified 
+            by a <see cref="T:C1.Olap.C1OlapKey" /> object. These objects contain a list
+            of <see cref="T:C1.Olap.C1OlapField" /> objects and specific values.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.Olap.C1OlapField.GetUniqueValues">
+      <summary>
+            Gets a list of unique values found in the data source for this field.
+            </summary>
+      <returns>A list of unique values found in the data source for this field.</returns>
+      <remarks>
+            This list is updated whenever the <see cref="P:C1.Olap.C1OlapField.OlapEngine" /> traverses
+            the data to build the output table. Calling this method before the engine
+            builds the output table returns an empty collection.
+            </remarks>
+    </member>
+    <member name="M:C1.Olap.C1OlapField.OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Olap.C1OlapField.PropertyChanged" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.ComponentModel.PropertyChangedEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapField.WriteXml(System.Xml.XmlWriter)">
+      <summary>
+            Saves the field into an <see cref="T:System.Xml.XmlWriter" />.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the field will be saved.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapField.ReadXml(System.Xml.XmlReader)">
+      <summary>
+            Reads the field from an <see cref="T:System.Xml.XmlReader" />.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the field information.</param>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.Name">
+      <summary>
+            Gets the name of the field source column.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.Caption">
+      <summary>
+            Gets or sets a string to be displayed in the user interface.
+            </summary>
+      <remarks>
+            If this property is set to null or to an empty string, the <see cref="P:C1.Olap.C1OlapField.Name" />
+            property will be used instead.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.Width">
+      <summary>
+            Gets or sets the preferred width to be used for showing the field in the user interface.
+            </summary>
+      <remarks>
+            Setting this property to zero or to a negative value disables it. Setting it
+            to a positive value causes any bound grid controls to use the value when 
+            setting column widths.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.Type">
+      <summary>
+            Gets the type of the field source column.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.Subtotal">
+      <summary>
+            Gets or sets the type of subtotal to use when combining field values.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.WeightField">
+      <summary>
+            Gets or sets the <see cref="T:C1.Olap.C1OlapField" /> used as a weight for calculating
+            subtotals on this field.
+            </summary>
+      <remarks>
+        <para>If this property is set to null, all values are assumed to have weight one.</para>
+        <para>This property allows you to calculate weighted averages and totals. 
+            For example, if the data contains a 'Quantity' field and a 'Price' field,
+            you could use the 'Price' field as a value field and the 'Quantity' field as
+            a weight. The output would contain a weighted average of the data.</para>
+      </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.Format">
+      <summary>
+            Gets or sets the format to use when displaying field values.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.Style">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapFieldStyle" /> used to display the field values on the grid.
+            </summary>
+      <remarks>
+        <para>This property allows you to assign style properties to a specific <see cref="T:C1.Olap.C1OlapField" />,
+            customizing the way the field values are displayed to the user.</para>
+        <para>Customizing the appearance of a field can be useful in views that contain
+            multiple value fields.</para>
+        <para>For example, the code below creates a view with two value fields and gives one
+            of the fields a green background:</para>
+        <code>
+            // create view
+            var olap = this.c1OlapPage1.OlapEngine;
+            olap.RowFields.Add("ProductName");
+            olap.ColumnFields.Add("Country");
+            olap.ValueFields.MaxItems = 2;
+            olap.ValueFields.Add("ExtendedPrice", "Freight");
+            
+            // give the "ExtendedPrice" field a green background
+            var f = olap.Fields["ExtendedPrice"];
+            f.Style.BackColor = Color.FromArgb(240, 255, 240);
+            </code>
+        <para>You can also create conditional styles using the <see cref="P:C1.Olap.C1OlapField.StyleHigh" />
+            and <see cref="P:C1.Olap.C1OlapField.StyleLow" /> properties.</para>
+      </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.StyleHigh">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapConditionalFieldStyle" /> used to display high values.
+            </summary>
+      <remarks>
+        <para>This property allows you to apply conditional formatting to a field, making
+            certain values stand out when displayed on to the user.</para>
+        <para>For example, the code below shows values in the top 10% range in bold
+            with a green background and values in the bottom 10% range in bold with a
+            red background:</para>
+        <code>
+            // apply formatting to all value fields
+            var olap = this.c1OlapPage1.OlapEngine;
+            foreach (var f in olap.ValueFields)
+            {
+              // show top 10% values in green, bold
+              var sh = f.StyleHigh;
+              sh.ConditionType = C1.Olap.ConditionType.Percentage;
+              sh.Value = .9;
+              sh.BackColor = Color.FromArgb(210, 255, 210);
+              sh.FontBold = true;
+              
+              // show bottom 10% values in red, bold
+              var sl = f.StyleLow;
+              sl.ConditionType = C1.Olap.ConditionType.Percentage;
+              sl.Value = .1;
+              sl.BackColor = Color.FromArgb(255, 210, 210);
+              sl.FontBold = true;
+            }
+            </code>
+      </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.StyleLow">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapConditionalFieldStyle" /> used to display low values.
+            </summary>
+      <remarks>
+        <para>This property allows you to apply conditional formatting to a field, making
+            certain values stand out when displayed to the user.</para>
+        <para>For an example, see the <see cref="P:C1.Olap.C1OlapField.StyleHigh" /> property.</para>
+      </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.Filter">
+      <summary>
+            Gets the filter used to select field values.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.IsActive">
+      <summary>
+            Gets or sets whether this field is active in the Olap view.
+            </summary>
+      <remarks>
+            Setting this property to true causes the field to be added to the
+            <see cref="P:C1.Olap.C1OlapEngine.RowFields" /> list of the parent <see cref="T:C1.Olap.C1OlapEngine" />.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.OlapEngine">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapEngine" /> that owns this field.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapField.ParentList">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapFieldList" /> that contains this field.
+            </summary>
+    </member>
+    <member name="E:C1.Olap.C1OlapField.PropertyChanged">
+      <summary>
+            Fires when a property changes.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.C1OlapFieldList">
+      <summary>
+            Represents a list of <see cref="T:C1.Olap.C1OlapField" /> objects.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldList.Add(System.String[])">
+      <summary>
+            Adds an existing <see cref="T:C1.Olap.C1OlapField" /> to the list.
+            </summary>
+      <param name="fieldNames">One or more field names to add to the list.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldList.Insert(System.Int32,System.String)">
+      <summary>
+            Inserts a <see cref="T:C1.Olap.C1OlapField" /> at a specified position in the list.
+            </summary>
+      <param name="index">Position where the field will be inserted.</param>
+      <param name="fieldName">Name of the existing <see cref="T:C1.Olap.C1OlapField" />,</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldList.IndexOf(System.String)">
+      <summary>
+            Gets the position of a given <see cref="T:C1.Olap.C1OlapField" /> in the list.
+            </summary>
+      <param name="fieldName">Name of the field to look for.</param>
+      <returns>The index of the field in the list, or -1 if the field is
+            not a member of the list.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldList.InsertItem(System.Int32,C1.Olap.C1OlapField)">
+      <summary>
+            Inserts an <see cref="T:C1.Olap.C1OlapField" /> at a specified position in the list.
+            </summary>
+      <param name="index">Position where the field will be inserted.</param>
+      <param name="item">
+        <see cref="T:C1.Olap.C1OlapField" /> to add to the list.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldList.Remove(System.String)">
+      <summary>
+            Removes the first occurrence of the <see cref="T:C1.Olap.C1OlapField" /> with a name that matches
+            the one passed as parameter.
+            </summary>
+      <param name="fieldName">Name of the <see cref="T:C1.Olap.C1OlapField" /> to remove</param>
+      <returns>true if item is successfully removed; otherwise, false. This method also
+            returns false if item was not found in the list.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldList.RemoveItem(System.Int32)">
+      <summary>
+            Removes an item from the list.
+            </summary>
+      <param name="index">Index of the item to remove from the list.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldList.ClearItems">
+      <summary>
+            Removes all items from the list.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldList.SetItem(System.Int32,C1.Olap.C1OlapField)">
+      <summary>
+            Replaces the item at a specified position.
+            </summary>
+      <param name="index">Index of the item to replace.</param>
+      <param name="item">New value for the item at the specified index.</param>
+    </member>
+    <member name="P:C1.Olap.C1OlapFieldList.MaxItems">
+      <summary>
+            Gets or sets the maximum number of fields allowed in this list.
+            </summary>
+      <remarks>
+            Negative values mean the list can have any number of items.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapFieldList.Item(System.String)">
+      <summary>
+            Gets a <see cref="T:C1.Olap.C1OlapField" /> by name.
+            </summary>
+      <param name="fieldName">Name of the field to retrieve.</param>
+      <returns>The requested <see cref="T:C1.Olap.C1OlapField" />.</returns>
+      <remarks>
+            If the list does not contain a field with the specified name,
+            an exception is thrown.
+            </remarks>
+    </member>
+    <member name="T:C1.Olap.C1OlapFieldStyle">
+      <summary>
+            Style used to display field values to the user.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldStyle.Clear">
+      <summary>
+            Clears this style.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldStyle.WriteXml(System.Xml.XmlWriter,System.String)">
+      <summary>
+            Saves the style into an <see cref="T:System.Xml.XmlWriter" />.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the style will be saved.</param>
+      <param name="styleName">
+        <see cref="T:System.Xml.XmlWriter" /> name of the style to be saved.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldStyle.ReadXml(System.Xml.XmlReader)">
+      <summary>
+            Reads the style from an <see cref="T:System.Xml.XmlReader" />.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the style information.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldStyle.OnPropertyChanged">
+      <summary>
+            Notifies the parent field that the style has changed.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldStyle.SaveAttributes(System.Xml.XmlWriter)">
+      <summary>
+            Saves the style properties to an <see cref="T:System.Xml.XmlWriter" />.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the style properties will be saved.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFieldStyle.LoadAttributes(System.Xml.XmlReader)">
+      <summary>
+            Loads the style properties from an <see cref="T:System.Xml.XmlReader" />.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the style properties.</param>
+    </member>
+    <member name="P:C1.Olap.C1OlapFieldStyle.BackColor">
+      <summary>
+            Gets or sets the color used to paint the background of cells in this field.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFieldStyle.ForeColor">
+      <summary>
+            Gets or sets the color used to paint the content of cells in this field.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFieldStyle.FontBold">
+      <summary>
+            Gets or sets a value that determines whether cells in this field should be shown in bold.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFieldStyle.Field">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapField" /> that owns this style.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFieldStyle.IsEmpty">
+      <summary>
+            Gets a value that indicates whether this style is empty.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.ConditionType">
+      <summary>
+            Specifies the type of comparison to be used when applying a
+            <see cref="T:C1.Olap.C1OlapConditionalFieldStyle" />.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionType.NotSet">
+      <summary>
+            Disable conditional formatting for this style.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionType.Absolute">
+      <summary>
+            Compare field values to the specified absolute value.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionType.Percentage">
+      <summary>
+            Compare field values to the specified value as a percentage.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.C1OlapConditionalFieldStyle">
+      <summary>
+            Conditional style applied to cells depending on their value.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapConditionalFieldStyle.AppliesTo(System.Double,System.Double,System.Double)">
+      <summary>
+             Determines whether this style should be applied to a given value.
+            </summary>
+      <param name="value">Value to test for.</param>
+      <param name="min">Lower value of the value range to use with conditional formatting.</param>
+      <param name="max">Upper value of the value range to use with conditional formatting.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapConditionalFieldStyle.SaveAttributes(System.Xml.XmlWriter)">
+      <summary>
+            Saves the style properties to an <see cref="T:System.Xml.XmlWriter" />.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the style properties will be saved.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapConditionalFieldStyle.LoadAttributes(System.Xml.XmlReader)">
+      <summary>
+            Reads the style from an <see cref="T:System.Xml.XmlReader" />.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the style information.</param>
+    </member>
+    <member name="P:C1.Olap.C1OlapConditionalFieldStyle.ConditionType">
+      <summary>
+            Gets or sets the condition that determines whether this style should be applied.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapConditionalFieldStyle.Value">
+      <summary>
+            Gets or sets the threshold that determines whether this style should be applied.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapConditionalFieldStyle.IsEmpty">
+      <summary>
+            Gets a value that indicates whether this style is empty.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.ConditionOperator">
+      <summary>
+            Represents operators that can be used in filter conditions.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.None">
+      <summary>
+            Disables the operator.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.Equals">
+      <summary>
+            Return true if the value equals the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.NotEquals">
+      <summary>
+            Return true if the value does not equal the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.GreaterThan">
+      <summary>
+            Return true if the value is greater than the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.LessThan">
+      <summary>
+            Return true if the value is less than the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.GreaterThanOrEqualTo">
+      <summary>
+            Return true if the value is greater than or equal to the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.LessThanOrEqualTo">
+      <summary>
+            Return true if the value is less than or equal to the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.Contains">
+      <summary>
+            Return true if the string representation of the value contains the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.DoesNotContain">
+      <summary>
+            Return true if the string representation of the value does not contain the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.BeginsWith">
+      <summary>
+            Return true if the string representation of the value begins with the operator parameter.
+            </summary>
+    </member>
+    <member name="F:C1.Olap.ConditionOperator.EndsWith">
+      <summary>
+            Return true if the string representation of the value ends with the operator parameter.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.C1OlapFilter">
+      <summary>
+            Represents a filter used to select values for a field.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapFilter.#ctor(C1.Olap.C1OlapField)">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Olap.C1OlapFilter" />.
+            </summary>
+      <param name="field">
+        <see cref="T:C1.Olap.C1OlapField" /> that owns the new filter.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFilter.Apply(System.Object)">
+      <summary>
+            Applies the filter to a value.
+            </summary>
+      <param name="value">Value to test.</param>
+      <returns>True if the values passes through the filter, false otherwise.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapFilter.Clear">
+      <summary>
+            Clears the filter.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.C1OlapFilter.OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Olap.C1OlapFilter.PropertyChanged" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.ComponentModel.PropertyChangedEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFilter.WriteXml(System.Xml.XmlWriter)">
+      <summary>
+            Persist filter to Xml.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the filter will be saved.</param>
+    </member>
+    <member name="M:C1.Olap.C1OlapFilter.ReadXml(System.Xml.XmlReader)">
+      <summary>
+            Reads a filter from Xml.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the filter definition.</param>
+    </member>
+    <member name="P:C1.Olap.C1OlapFilter.Field">
+      <summary>
+            Gets the field that this filter is acting on.
+            </summary>
+    </member>
+    <member name="E:C1.Olap.C1OlapFilter.PropertyChanged">
+      <summary>
+            Fires when a property changes.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFilter.Condition1">
+      <summary>
+            Gets the first filter condition.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFilter.Condition2">
+      <summary>
+            Gets the second filter condition.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFilter.AndConditions">
+      <summary>
+            Gets or sets whether the filter conditions should be combined
+            with an 'And' or with an 'Or' operator.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFilter.IsCustomFilterActive">
+      <summary>
+            Gets a value that indicates the custom filter is active.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFilter.IsActive">
+      <summary>
+            Gets a value that indicates the filter is active.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapFilter.ShowValues">
+      <summary>
+            Gets or sets an array with the values that should be included in the output.
+            </summary>
+      <remarks>
+            Setting this property to null causes the filter to include all values in the output.
+            </remarks>
+    </member>
+    <member name="P:C1.Olap.C1OlapFilter.Values">
+      <summary>
+            Gets or sets the list of values to be displayed in the value filter list editor.
+            </summary>
+      <remarks>
+            Setting this property to null causes the filter build the value list automatically
+            using the values present in the data source.
+            </remarks>
+    </member>
+    <member name="T:C1.Olap.FilterCondition">
+      <summary>
+            Represents a condition within a <see cref="T:C1.Olap.C1OlapFilter" />.
+            </summary>
+      <remarks>
+            Each <see cref="T:C1.Olap.C1OlapFilter" /> contains up to two conditions that
+            can be combined with 'And' or 'Or' operators.
+            </remarks>
+    </member>
+    <member name="M:C1.Olap.FilterCondition.Clear">
+      <summary>
+            Clears this condition by setting the <see cref="P:C1.Olap.FilterCondition.Operator" /> to 'None' 
+            and the <see cref="P:C1.Olap.FilterCondition.Parameter" /> to null.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.FilterCondition.Apply(System.Object)">
+      <summary>
+            Applies the condition to a given value.
+            </summary>
+      <param name="value">Value to test.</param>
+      <returns>True if the value satisfies the condition, false otherwise.</returns>
+    </member>
+    <member name="M:C1.Olap.FilterCondition.OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Olap.FilterCondition.PropertyChanged" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.ComponentModel.PropertyChangedEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="P:C1.Olap.FilterCondition.IsActive">
+      <summary>
+            Gets a value that indicates whether the condition is active.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.FilterCondition.Operator">
+      <summary>
+            Gets or sets the operator used by this condition.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.FilterCondition.Parameter">
+      <summary>
+            Gets or sets the parameter used by this condition.
+            </summary>
+    </member>
+    <member name="E:C1.Olap.FilterCondition.PropertyChanged">
+      <summary>
+            Fires when a property changes.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.C1OlapKey">
+      <summary>
+            Represents a combination of <see cref="T:C1.Olap.C1OlapField" /> objects and their values.
+            </summary>
+      <remarks>
+        <para>Each row and column on the output Olap table is defined by a unique
+            <see cref="T:C1.Olap.C1OlapKey" />. The values in the table cells represent an aggregation
+            of the value field for all items that match the row and column keys.</para>
+        <para>For example, if a column key is set to 'Country:UK;Customer:Joe' and 
+            the row key is set to 'Category:Desserts;Product:Pie', then the corresponding 
+            cell contains the aggregate for all items with the following properties:
+            'Country:UK;Customer:Joe;Category:Desserts;Product:Pie'.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.Olap.C1OlapKey.GetFormattedValue(System.Int32)">
+      <summary>
+            Gets a formatted value from the <see cref="P:C1.Olap.C1OlapKey.Values" /> array.
+            </summary>
+      <param name="index">Index of the field whose value should be retrieved.</param>
+      <returns>The formatted value for the given index.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapKey.GetFormattedValue(System.Int32,System.Object)">
+      <summary>
+            Gets a formatted value from the <see cref="P:C1.Olap.C1OlapKey.Values" /> array.
+            </summary>
+      <param name="index">Index of the field whose value should be retrieved.</param>
+      <param name="item">Object that provides the unformatted value.</param>
+      <returns>The formatted value for the given index.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapKey.MatchesItem(System.Object)">
+      <summary>
+            Gets a value that determines whether a given data object matches the
+            content of this <see cref="T:C1.Olap.C1OlapKey" />.
+            </summary>
+      <param name="item">Item that contains the raw data.</param>
+      <returns>True if the <paramref name="item" /> matches this 
+            <see cref="T:C1.Olap.C1OlapKey" />.</returns>
+      <remarks>
+        <para>The match is determined by comparing the formatted values for each
+            <see cref="T:C1.Olap.C1OlapField" /> in the key to the formatted values in the
+            <paramref name="item" />. Therefore, matches may occur even if the raw 
+            values are different.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.Olap.C1OlapKey.ToString">
+      <summary>
+            Returns a string that represents this <see cref="T:C1.Olap.C1OlapKey" />.
+            </summary>
+      <returns>A string that represents this <see cref="T:C1.Olap.C1OlapKey" />.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapKey.GetHashCode">
+      <summary>
+            Serves as a hash function for a <see cref="T:C1.Olap.C1OlapKey" /> object. 
+            </summary>
+      <returns>An integer that serves as a hash function for a <see cref="T:C1.Olap.C1OlapKey" /> object.</returns>
+    </member>
+    <member name="M:C1.Olap.C1OlapKey.Equals(System.Object)">
+      <summary>
+            Returns true if two <see cref="T:C1.Olap.C1OlapKey" /> objects represent the 
+            same set of <see cref="T:C1.Olap.C1OlapField" /> objects and values.
+            </summary>
+      <param name="obj">
+        <see cref="T:C1.Olap.C1OlapKey" /> to compare with this key.</param>
+      <returns>True if both keys represent the same fields and values.</returns>
+    </member>
+    <member name="P:C1.Olap.C1OlapKey.Fields">
+      <summary>
+            Gets the list of <see cref="T:C1.Olap.C1OlapField" /> pivot fields associated with this
+            <see cref="T:C1.Olap.C1OlapKey" />.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapKey.Values">
+      <summary>
+            Gets an array of values for the <see cref="T:C1.Olap.C1OlapField" /> pivot fields
+            associated with this <see cref="T:C1.Olap.C1OlapKey" />.
+            </summary>
+    </member>
+    <member name="P:C1.Olap.C1OlapKey.ValueField">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapField" /> that represents the value field 
+            associated with this <see cref="T:C1.Olap.C1OlapKey" />.
+            </summary>
+    </member>
+    <member name="T:C1.Olap.ValueSet`1">
+      <summary>
+            Represents a collection of unique values of type <b>T</b>.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.ValueSet`1.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Olap.ValueSet`1" />.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.ValueSet`1.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Olap.ValueSet`1" />.
+            </summary>
+      <param name="comparer">The comparer to use when comparing keys.</param>
+    </member>
+    <member name="M:C1.Olap.ValueSet`1.Add(`0)">
+      <summary>
+            Adds a value to the collection if not already present.
+            </summary>
+      <param name="value">Value to add to the collection.</param>
+    </member>
+    <member name="M:C1.Olap.ValueSet`1.Contains(`0)">
+      <summary>
+            Determines whether the collection contains a specific value.
+            </summary>
+      <param name="value">Value to look for.</param>
+      <returns>True if the collection contains the value.</returns>
+    </member>
+    <member name="M:C1.Olap.ValueSet`1.Clear">
+      <summary>
+            Removes all objects from the collection.
+            </summary>
+    </member>
+    <member name="M:C1.Olap.ValueSet`1.Sort">
+      <summary>
+            Sorts the elements in the collection.
+            </summary>
+      <remarks>
+            This method assumes the elements support the <see cref="T:System.IComparable" /> interface.
+            </remarks>
+    </member>
+    <member name="M:C1.Olap.ValueSet`1.ToList">
+      <summary>
+            Creates a <see cref="T:System.Collections.Generic.List`1" /> from this collection.
+            </summary>
+      <returns>A <see cref="T:System.Collections.Generic.List`1" /> that contains the objects in this collection.</returns>
+    </member>
+    <member name="M:C1.Olap.ValueSet`1.ToArray">
+      <summary>
+            Creates an array from this collection.
+            </summary>
+      <returns>An array that contains the objects in this collection.</returns>
+    </member>
+    <member name="P:C1.Olap.ValueSet`1.Count">
+      <summary>
+            Gets the number of objects in the collection.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.C1BasePanel">
+      <summary>
+            Base class for <see cref="T:C1.Win.Olap.C1OlapPage" /> and <see cref="T:C1.Win.Olap.C1OlapPanel" />.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.ChartType">
+      <summary>
+            Specifies the type of chart to display.
+            </summary>
+    </member>
+    <member name="F:C1.Win.Olap.ChartType.Bar">
+      <summary>
+            Series are represented by horizontal bars.
+            </summary>
+    </member>
+    <member name="F:C1.Win.Olap.ChartType.Column">
+      <summary>
+            Series are represented by vertical columns.
+            </summary>
+    </member>
+    <member name="F:C1.Win.Olap.ChartType.Area">
+      <summary>
+            Series are represented by filled polygons.
+            </summary>
+    </member>
+    <member name="F:C1.Win.Olap.ChartType.Line">
+      <summary>
+            Series are represented by polygons with symbols at the data points.
+            </summary>
+    </member>
+    <member name="F:C1.Win.Olap.ChartType.Scatter">
+      <summary>
+            Series are represented by groups of symbols.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.ShowLegend">
+      <summary>
+            Specifies whether a legend should be displayed.
+            </summary>
+    </member>
+    <member name="F:C1.Win.Olap.ShowLegend.Automatic">
+      <summary>
+            Show legend if there are two or more series.
+            </summary>
+    </member>
+    <member name="F:C1.Win.Olap.ShowLegend.Always">
+      <summary>
+            Always show legend.
+            </summary>
+    </member>
+    <member name="F:C1.Win.Olap.ShowLegend.Never">
+      <summary>
+            Never show legend.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.C1OlapChart">
+      <summary>
+            Custom chart control for visualizing Olap data.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapChart.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapChart" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapChart.Update">
+      <summary>
+            Rebuilds the chart even when it is not visible.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapChart.OnVisibleChanged(System.EventArgs)">
+      <summary>
+            Overridden to update the chart when it becomes visible.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that provides the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapChart.WriteXml(System.String)">
+      <summary>
+            Saves the control settings into an Xml file.
+            </summary>
+      <param name="path">Name of the file to save.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapChart.WriteXml(System.Xml.XmlWriter)">
+      <summary>
+            Saves the control settings into an <see cref="T:System.Xml.XmlWriter" />.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the control settings will be saved.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapChart.ReadXml(System.String)">
+      <summary>
+            Reads the control settings from a file.
+            </summary>
+      <param name="path">Name of the file that contains the control settings.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapChart.ReadXml(System.Xml.XmlReader)">
+      <summary>
+            Reads the control settings from an <see cref="T:System.Xml.XmlReader" />.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the control settings.</param>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.ChartTitle">
+      <summary>
+            Sets the title of the C1OlapChart.
+            </summary>
+      <remarks>
+            If ChartTitle is not set (or set to null), C1OlapChart will use the title
+            of the current view.
+            </remarks>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.ChartType">
+      <summary>
+            Gets or sets the chart type (Bar, Column, Line, Area, etc).
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.Stacked">
+      <summary>
+            Gets or sets a value that determines whether the series should
+            be stacked or placed side-by-side.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.ShowLegend">
+      <summary>
+            Gets or sets whether the chart includes a legend describing each series.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.ShowTitle">
+      <summary>
+            Gets or sets whether the chart contains a title above the data.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.ShowGridLines">
+      <summary>
+            Gets or sets whether the chart includes gridlines along the X axis.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.ColorGeneration">
+      <summary>
+            Gets or sets the color scheme used for the data series.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.PropBag">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.ToolTip">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.BackColor">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.DataSource">
+      <summary>
+            Gets or sets the <see cref="T:C1.Win.Olap.C1OlapPanel" /> that provides data for this chart.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.MaxSeries">
+      <summary>
+            Gets or sets the maximum number of data series shown in the chart.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.MaxPoints">
+      <summary>
+            Gets or sets the maximum number of points shown in each series.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapChart.ChartTotals">
+      <summary>
+            Gets or sets whether the chart should include only totals.
+            </summary>
+      <remarks>
+        <para>This property allows you to create summary charts that include only the 
+            totals, as opposed to one series for each column in the data source.</para>
+        <para>It is useful when creating views that have so many individual values
+            that the default detailed chart becomes too crowded to be readable.</para>
+      </remarks>
+    </member>
+    <member name="T:C1.Win.Olap.C1OlapGrid">
+      <summary>
+            Custom grid control for visualizing Olap data.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapGrid" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.GetDetail(System.Int32,System.Int32)">
+      <summary>
+            Gets a <see cref="T:System.Data.DataTable" /> containing the raw records represented by an Olap cell.
+            </summary>
+      <param name="row">Index of the row that contains the Olap cell.</param>
+      <param name="col">Index of the column that contains the Olap cell.</param>
+      <returns>A <see cref="T:System.Data.DataTable" /> containing the raw records represented 
+            by the given Olap cell.</returns>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.CollapseAllCols">
+      <summary>
+            Collapse all the columns of subtotal groups.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.CollapseAllRows">
+      <summary>
+            Collapse all the rows of subtotal groups.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.ExpandAllCols">
+      <summary>
+            Expand all the columns of subtotal groups.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.ExpandAllRows">
+      <summary>
+            Expand all the rows of subtotal groups.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.OnOwnerDrawCell(C1.Win.C1FlexGrid.OwnerDrawCellEventArgs)">
+      <summary>
+            Overridden to apply conditional formatting.
+            </summary>
+      <param name="e">
+        <see cref="T:C1.Win.C1FlexGrid.OwnerDrawCellEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.EndInit">
+      <summary>
+            Overridden to create custom styles for subtotals.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.OnDataRefresh(System.ComponentModel.ListChangedEventArgs)">
+      <summary>
+            Overridden to update headers when the grid is sorted.
+            </summary>
+      <param name="e">
+        <see cref="T:System.ComponentModel.ListChangedEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.OnBeforeSort(C1.Win.C1FlexGrid.SortColEventArgs)">
+      <summary>
+            Overridden to provide three-state sorting (up, down, none).
+            </summary>
+      <param name="e">
+        <see cref="T:C1.Win.C1FlexGrid.SortColEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.OnAfterSort(C1.Win.C1FlexGrid.SortColEventArgs)">
+      <summary>
+            Overridden to update row and column headers after sorting.
+            </summary>
+      <param name="e">
+        <see cref="T:C1.Win.C1FlexGrid.SortColEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.OnAfterResizeColumn(C1.Win.C1FlexGrid.RowColEventArgs)">
+      <summary>
+            Overridden to resize all data columns uniformly.
+            </summary>
+      <param name="e">
+        <see cref="T:C1.Win.C1FlexGrid.RowColEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapGrid.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+      <summary>
+            Overridden to show cell details when the user right-clicks a cell and to
+            collapse/expand subtotal rows/columns.
+            </summary>
+      <param name="e">
+        <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.DataSource">
+      <summary>
+            Gets or sets the <see cref="T:C1.Win.Olap.C1OlapPanel" /> that provides data for this grid.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.DataMember">
+      <summary>
+            Gets or sets the specific list in a <see cref="P:C1.Win.Olap.C1OlapGrid.DataSource" /> object that should be analyzed.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.ShowDetailOnRightClick">
+      <summary>
+            Gets or sets a value that determines whether the grid should show a popup containing
+            the detail records when the user right-clicks a cell.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.CollapsibleSubtotals">
+      <summary>
+            Gets or sets a value that determines whether the grid should allow users to collapse 
+            and expand subtotal groups.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.SubtotalBackground">
+      <summary>
+            Gets or sets the color used to paint the background of cells that contain totals.
+            </summary>
+      <remarks>
+            Setting this property to <b>Color.Empty</b> (the default value) causes the subtotal
+            background color to change automatically and match the current <see cref="P:C1.Win.Olap.C1OlapGrid.VisualStyle" />.
+            </remarks>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AllowSorting">
+      <summary>
+            Gets or sets whether the grid can be sorted by clicking the column headers.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AutoResize">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AllowMergingFixed">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AllowDragging">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AutoSearch">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AllowEditing">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.EditOptions">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AutoClipboard">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.ClipboardCopyMode">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AllowAddNew">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AllowDelete">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.AllowFreezing">
+      <summary>
+            Overridden to modify the default value and attributes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapGrid.VisualStyle">
+      <summary>
+            Overridden to modify the default value.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.C1OlapPage">
+      <summary>
+            Provides a complete user interface for Olap applications.
+            </summary>
+      <remarks>
+        <para>The control contains a <see cref="T:C1.Win.Olap.C1OlapPanel" /> on the left and 
+            a tabbed content area on the right.</para>
+        <para>The <see cref="T:C1.Win.Olap.C1OlapPanel" /> allows users to select and customize
+            the fields that should be included in the Olap analysis.</para>
+        <para>The tabbed content area contains three pages: a <see cref="T:C1.Win.Olap.C1OlapGrid" />
+            and a <see cref="T:C1.Win.Olap.C1OlapChart" /> that show the Olap analysis, and a plain 
+            grid that shows the raw data.</para>
+        <para>The control also provides a customizable <see cref="P:C1.Win.Olap.C1OlapPage.ToolStrip" /> 
+            with commonly used commands.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapPage" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.OnUpdating(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPage.Updating" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.OnUpdated(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPage.Updated" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.OnLoadedFields(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPage.LoadedFields" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.OnViewDefinitionChanged(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPage.ViewDefinitionChanged" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.OnDataSourceChanged(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPage.DataSourceChanged" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.ProcessCmdKey(System.Windows.Forms.Message@,System.Windows.Forms.Keys)">
+      <summary>
+            Overridden to process shortcut keys.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.WriteXml(System.String)">
+      <summary>
+            Saves the control settings into an Xml file.
+            </summary>
+      <param name="path">Name of the file to save.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.WriteXml(System.Xml.XmlWriter)">
+      <summary>
+            Saves the control settings into an <see cref="T:System.Xml.XmlWriter" />.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the control settings will be saved.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.ReadXml(System.String)">
+      <summary>
+            Reads the control settings from a file.
+            </summary>
+      <param name="path">Name of the file that contains the control settings.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.ReadXml(System.Xml.XmlReader)">
+      <summary>
+            Reads the control settings from an <see cref="T:System.Xml.XmlReader" />.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the control settings.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPage.Dispose(System.Boolean)">
+      <summary> 
+            Clean up any resources being used.
+            </summary>
+      <param name="disposing">True if managed resources should be disposed; otherwise, False.</param>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.DataSource">
+      <summary>
+            Gets or sets the object that contains the data to be analyzed.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.DataMember">
+      <summary>
+            Gets or sets the specific list in a <see cref="P:C1.Win.Olap.C1OlapPage.DataSource" /> object to be analyzed.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowTotalsRows">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should include rows containing subtotals or grand totals.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowTotalsColumns">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should include columns containing subtotals or grand totals.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowZeros">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should use zeros to indicate missing values or leave the cells empty.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowRawData">
+      <summary>
+            Gets or sets a value that determines whether the page should include a
+            tab showing the raw data.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowDetailOnRightClick">
+      <summary>
+            Gets or sets a value that determines whether right-clicking the
+            Olap grid should cause the control to display the raw records 
+            represented by the cell clicked.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.VisualStyle">
+      <summary>
+            Gets or sets a value that determines the appearance of the grid.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ChartType">
+      <summary>
+            Gets or sets the type of chart to create.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.Palette">
+      <summary>
+            Gets or sets the color scheme used for the data series.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowTitle">
+      <summary>
+            Gets or sets whether the chart should include a title.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowLegend">
+      <summary>
+            Gets or sets whether the chart should include a legend.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowGridLines">
+      <summary>
+            Gets or sets whether the chart should include gridlines along the X axis.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.Stacked">
+      <summary>
+            Gets or sets a value that determines whether the series should
+            be stacked or placed side-by-side.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ChartTotals">
+      <summary>
+            Gets or sets a value that determines whether the <see cref="P:C1.Win.Olap.C1OlapPage.OlapChart" />
+            should display only totals.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.Document">
+      <summary>
+            Gets the <see cref="T:C1.Win.Olap.C1OlapPrintDocument" /> used to render the 
+            current view.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShortcutsEnabled">
+      <summary>
+            Gets or sets a value that determines whether the page should automatically
+            handle shortcut keys (e.g. Ctrl+S to save a view, Ctrl+O to open a view,
+            Ctrl+Z to undo, Ctrl+Y to redo).
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowUndoRedo">
+      <summary>
+            Gets or sets a value that determines whether the toolbar should include 
+            undo/redo buttons.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPage.Updating">
+      <summary>
+            Occurs before the <see cref="P:C1.Win.Olap.C1OlapPage.OlapPanel" /> starts updating the output Olap table.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPage.Updated">
+      <summary>
+            Occurs after the <see cref="P:C1.Win.Olap.C1OlapPage.OlapPanel" /> finishes the Olap analysis.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPage.LoadedFields">
+      <summary>
+            Occurs after the <see cref="P:C1.Win.Olap.C1OlapPage.OlapPanel" /> finishes loading the fields for
+            the current DataSource.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPage.ViewDefinitionChanged">
+      <summary>
+            Occurs when the view definition changes, before the output table is updated.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPage.DataSourceChanged">
+      <summary>
+            Occurs when the data source changes.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.OlapPanel">
+      <summary>
+            Gets the <see cref="T:C1.Win.Olap.C1OlapPanel" /> docked to the left of the page.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.OlapEngine">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapEngine" /> contained on the page.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.TabControl">
+      <summary>
+            Gets the <see cref="P:C1.Win.Olap.C1OlapPage.TabControl" /> where the <see cref="P:C1.Win.Olap.C1OlapPage.OlapGrid" /> and <see cref="P:C1.Win.Olap.C1OlapPage.OlapChart" /> controls appear.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ToolStrip">
+      <summary>
+            Gets the <see cref="P:C1.Win.Olap.C1OlapPage.ToolStrip" /> docked to the top of the page.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ButtonOpen">
+      <summary>
+            Gets the <see cref="T:System.Windows.Forms.ToolStripButton" /> used to open Olap view files.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ButtonSave">
+      <summary>
+            Gets the <see cref="T:System.Windows.Forms.ToolStripButton" /> used to save Olap view files.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.MenuGrid">
+      <summary>
+            Gets the <see cref="T:System.Windows.Forms.ToolStripDropDownButton" /> used to control grid options.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.MenuChart">
+      <summary>
+            Gets the <see cref="T:System.Windows.Forms.ToolStripDropDownButton" /> used to control chart options.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.MenuReport">
+      <summary>
+            Gets the <see cref="T:System.Windows.Forms.ToolStripSplitButton" /> used to control report options.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.LabelStatus">
+      <summary>
+            Gets the <see cref="T:System.Windows.Forms.ToolStripStatusLabel" /> that appears on the 
+            left of the status strip docked to the bottom of the page.
+            </summary>
+      <example>
+            The code below implements a simple method to show a status message
+            on the bottom of a <see cref="T:C1.Win.Olap.C1OlapPage" /> called <b>_c1OlapPage</b>.
+            <code>
+            // show status message
+            void ShowStatus(string msg)
+            {
+              _c1OlapPage.LabelStatus.Text = msg;
+            }
+            </code></example>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.LabelSelection">
+      <summary>
+            Gets the <see cref="T:System.Windows.Forms.ToolStripStatusLabel" /> that appears on the 
+            right of the status strip docked to the bottom of the page.
+            </summary>
+      <remarks>
+        <para>By default, the text in this label is updated automatically when
+            the uses changes the selection on the <see cref="P:C1.Win.Olap.C1OlapPage.OlapGrid" /> or the
+            <see cref="P:C1.Win.Olap.C1OlapPage.RawDataGrid" />.</para>
+        <para>To change this behavior and show custom messages, set the 
+            <see cref="P:C1.Win.Olap.C1OlapPage.ShowSelectionStatus" /> property to false and assign the text 
+            directly to the <see cref="P:C1.Win.Olap.C1OlapPage.LabelStatus" /> control.</para>
+      </remarks>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ShowSelectionStatus">
+      <summary>
+            Gets or sets a value that determines whether the control should 
+            automatically set the content of the <see cref="P:C1.Win.Olap.C1OlapPage.LabelSelection" />
+            to show the sum of the selected cells when the user makes selections 
+            on the grids.
+            </summary>
+      <remarks>
+            If you want to customize the selection messages, set this property
+            to false and set the text on the <see cref="P:C1.Win.Olap.C1OlapPage.LabelStatus" /> to the 
+            custom messages you want to show.
+            </remarks>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.OlapGrid">
+      <summary>
+            Gets the <see cref="T:C1.Win.Olap.C1OlapGrid" /> used to display the Olap results.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.OlapChart">
+      <summary>
+            Gets the <see cref="T:C1.Win.Olap.C1OlapChart" /> used to display the Olap results.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.RawDataGrid">
+      <summary>
+            Gets the <see cref="T:C1.Win.C1FlexGrid.C1FlexGrid" /> used to display the raw data.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPage.ViewDefinition">
+      <summary>
+            Gets or sets the Olap view definition as an Xml string.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.C1OlapPanel">
+      <summary>
+            Provides a user interface for interactively transforming regular data tables into Olap
+            pivot tables.
+            </summary>
+      <remarks>
+        <para>Olap pivot tables group data into one or more dimensions. The dimensions are represented
+            by rows and columns on a grid, and the data is stored in the grid cells.</para>
+        <para>Use the <see cref="P:C1.Win.Olap.C1OlapPanel.DataSource" /> property to set the source table, then use the 
+            <see cref="P:C1.Win.Olap.C1OlapPanel.OlapTable" /> property to get the output table.</para>
+        <para>If you use a <see cref="T:C1.Win.Olap.C1OlapGrid" /> to show the output data, then set the grid's
+            <see cref="P:C1.Win.Olap.C1OlapGrid.DataSource" /> property to the appropriate <b>C1OlapPanel</b>.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPanel.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapPanel" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPanel.OnUpdating(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPanel.Updating" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPanel.OnUpdated(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPanel.Updated" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPanel.OnLoadedFields(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPanel.LoadedFields" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPanel.OnViewDefinitionChanged(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPanel.ViewDefinitionChanged" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPanel.OnDataSourceChanged(System.EventArgs)">
+      <summary>
+            Raises the <see cref="E:C1.Win.Olap.C1OlapPanel.DataSourceChanged" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPanel.ConnectCube(System.String,System.String)">
+      <summary>
+            Connect to cube data source.
+            </summary>
+      <param name="cubeName">The name of the cube data source.</param>
+      <param name="connectionString">The connection string of cube data source.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPanel.Dispose(System.Boolean)">
+      <summary> 
+            Clean up any resources being used.
+            </summary>
+      <param name="disposing">True if managed resources should be disposed; otherwise, False.</param>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.DataSource">
+      <summary>
+            Gets or sets the object that contains the data to be analyzed.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.DataMember">
+      <summary>
+            Gets or sets the specific list in a <see cref="P:C1.Win.Olap.C1OlapPanel.DataSource" /> object to be analyzed.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.ViewDefinition">
+      <summary>
+            Gets or sets an XML string containing an Olap view definition.
+            </summary>
+      <remarks>
+        <para>This property is typically used to persist the current view as
+            an application setting, so views are preserved across sessions.</para>
+      </remarks>
+      <example>
+            The code below loads an Olap view from the application settings when
+            the application starts, and saves them back when the application ends.
+            <code>
+            public Form1()
+            {
+              InitializeComponent();
+              
+              // assign data to Olap panel
+              _c1OlapPanel.DataSource = GetDataTable();
+              
+              // load/create default view
+              try
+              {
+                _c1OlapPanel.ViewDefinition = Properties.Settings.Default.OlapView;
+              }
+              catch { }
+            }
+            
+            // save this view as the default
+            void _btnSaveAsDefault_Click(object sender, EventArgs e)
+            {
+              try
+              {
+                Properties.Settings.Default.OlapView = _c1OlapPanel.ViewDefinition;
+                Properties.Settings.Default.Save();
+              }
+              catch (Exception x)
+              {
+                MessageBox.Show(x.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+              }
+            }
+            </code></example>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.ShowTotalsRows">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should include rows containing subtotals or grand totals.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.ShowTotalsColumns">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should include columns containing subtotals or grand totals.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.ShowZeros">
+      <summary>
+            Gets or sets a value that determines whether the Olap output table
+            should use zeros to indicate missing values.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.OlapTable">
+      <summary>
+            Gets a reference to the <see cref="T:System.Data.DataTable" /> that contains the
+            output of the Olap analysis.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.OlapDefaultView">
+      <summary>
+            Gets the default <see cref="T:System.ComponentModel.IBindingList" /> that exposes the data 
+            in the <see cref="P:C1.Win.Olap.C1OlapPanel.OlapTable" />.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPanel.OlapEngine">
+      <summary>
+            Gets a reference to the <see cref="T:C1.Olap.C1OlapEngine" /> that performs
+            the Olap analysis for this <see cref="T:C1.Win.Olap.C1OlapPanel" />.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPanel.Updating">
+      <summary>
+            Occurs before the <see cref="P:C1.Win.Olap.C1OlapPanel.OlapEngine" /> starts updating the output Olap table.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPanel.Updated">
+      <summary>
+            Occurs after the <see cref="P:C1.Win.Olap.C1OlapPanel.OlapEngine" /> finishes the Olap analysis.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPanel.LoadedFields">
+      <summary>
+            Occurs after the <see cref="P:C1.Win.Olap.C1OlapPanel.OlapEngine" /> finishes loading the fields for
+            the current DataSource.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPanel.ViewDefinitionChanged">
+      <summary>
+            Occurs when the view definition changes, before the output table is updated.
+            </summary>
+    </member>
+    <member name="E:C1.Win.Olap.C1OlapPanel.DataSourceChanged">
+      <summary>
+            Occurs when the data source changes.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.Localization.Strings">
+      <summary>
+            The <see cref="T:C1.Win.Olap.Localization.Strings" /> class contains static properties used for localization.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.Localization.Strings.ResourceManager">
+      <summary>
+            The <see cref="P:C1.Win.Olap.Localization.Strings.ResourceManager" /> object used for lookup resources.
+            </summary>
+      <remarks>Set this property to the valid value if 
+            you define resources in a Custom Control assembly.</remarks>
+    </member>
+    <member name="P:C1.Win.Olap.Localization.Strings.UICulture">
+      <summary>
+            Returns default <see cref="T:System.Globalization.CultureInfo" /> object used as fallback culture.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.C1OlapPrintPreviewDialog">
+      <summary>
+            Represents a dialog used to preview and print <see cref="T:System.Drawing.Printing.PrintDocument" /> 
+            objects.
+            </summary>
+      <remarks>
+            This dialog is similar to the standard <see cref="T:System.Windows.Forms.PrintPreviewDialog" />
+            but provides additional options such printer and page setup buttons,
+            a better UI based on the <see cref="T:System.Windows.Forms.ToolStrip" /> control, and built-in
+            PDF export.
+            </remarks>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintPreviewDialog.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapPrintPreviewDialog" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintPreviewDialog.#ctor(System.Windows.Forms.Control)">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapPrintPreviewDialog" />.
+            </summary>
+      <param name="parentForm">Parent form that defines the initial size for this dialog.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintPreviewDialog.OnShown(System.EventArgs)">
+      <summary>
+            Overridden to assign document to preview control only after the 
+            initial activation.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintPreviewDialog.OnFormClosing(System.Windows.Forms.FormClosingEventArgs)">
+      <summary>
+            Overridden to cancel any ongoing previews when closing form.
+            </summary>
+      <param name="e">
+        <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintPreviewDialog.Dispose(System.Boolean)">
+      <summary>
+            Clean up any resources being used.
+            </summary>
+      <param name="disposing">True if managed resources should be disposed; otherwise, False.</param>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintPreviewDialog.Document">
+      <summary>
+            Gets or sets the <see cref="T:System.Drawing.Printing.PrintDocument" /> to preview.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.C1OlapPrintDocument">
+      <summary>
+            Represents a <see cref="T:System.Drawing.Printing.PrintDocument" /> that contains the information
+            in the current Olap view.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapPrintDocument" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.#ctor(C1.Win.Olap.C1OlapPage)">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapPrintDocument" />.
+            </summary>
+      <param name="page">
+        <see cref="T:C1.Win.Olap.C1OlapPage" /> that owns this document.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.GetCurrentPage">
+      <summary>
+            Gets the number of the page currently being printed.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.GetViewTitle">
+      <summary>
+            Gets a string that describes the current view.
+            </summary>
+      <remarks>
+        <para>Use the <b>$[viewTitle]</b> tag in the <see cref="P:C1.Win.Olap.C1OlapPrintDocument.HeaderText" /> or 
+            <see cref="P:C1.Win.Olap.C1OlapPrintDocument.FooterText" /> properties to display the <b>ViewTitle</b> 
+            in the header or footer of the document.</para>
+      </remarks>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.ShowOptions">
+      <summary>
+            Shows a dialog box that allows the user to set various document options, including
+            page setup, headers and footers, and content scaling.
+            </summary>
+      <returns>A <see cref="T:System.Windows.Forms.DialogResult" /></returns>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.WriteXml(System.Xml.XmlWriter)">
+      <summary>
+            Saves the document settings into an <see cref="T:System.Xml.XmlWriter" />.
+            </summary>
+      <param name="xw">
+        <see cref="T:System.Xml.XmlWriter" /> where the document settings will be saved.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.WriteXml(System.String)">
+      <summary>
+            Saves the document settings into an Xml file.
+            </summary>
+      <param name="path">Name of the file to save.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.ReadXml(System.Xml.XmlReader)">
+      <summary>
+            Reads the document settings from an <see cref="T:System.Xml.XmlReader" />.
+            </summary>
+      <param name="xr">
+        <see cref="T:System.Xml.XmlReader" /> that contains the document settings.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.ReadXml(System.String)">
+      <summary>
+            Reads the document settings from a file.
+            </summary>
+      <param name="path">Name of the file that contains the document settings.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.OnBeginPrint(System.Drawing.Printing.PrintEventArgs)">
+      <summary>
+            Raises the <see cref="E:System.Drawing.Printing.PrintDocument.BeginPrint" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.Drawing.Printing.PrintEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapPrintDocument.OnPrintPage(System.Drawing.Printing.PrintPageEventArgs)">
+      <summary>
+            Raises the <see cref="E:System.Drawing.Printing.PrintDocument.PrintPage" /> event.
+            </summary>
+      <param name="e">
+        <see cref="T:System.Drawing.Printing.PrintPageEventArgs" /> that contains the event data.</param>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.OlapGrid">
+      <summary>
+            Gets or sets the <see cref="T:C1.Win.Olap.C1OlapGrid" /> that shows the <see cref="T:C1.Win.Olap.C1OlapGrid" /> 
+            in the report.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.ShowGrid">
+      <summary>
+            Gets or sets a value that determines whether the <see cref="P:C1.Win.Olap.C1OlapPrintDocument.OlapGrid" /> 
+            is displayed in the report.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.GridOptions">
+      <summary>
+            Gets or sets options to be used when rendering the <see cref="P:C1.Win.Olap.C1OlapPrintDocument.OlapGrid" />.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.OlapChart">
+      <summary>
+            Gets or sets the <see cref="T:C1.Win.Olap.C1OlapChart" /> that shows the Olap chart in the report.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.ChartFillsPage">
+      <summary>
+            Gets or sets a value that determines whether the <see cref="P:C1.Win.Olap.C1OlapPrintDocument.OlapChart" /> fills the page
+            or whether it preserves its original aspect ratio.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.ShowChart">
+      <summary>
+            Gets or sets a value that determines whether the <see cref="P:C1.Win.Olap.C1OlapPrintDocument.OlapChart" /> 
+            is displayed in the report.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.RawDataGrid">
+      <summary>
+            Gets or sets the <see cref="T:C1.Win.C1FlexGrid.C1FlexGrid" /> that contains the raw data for the report.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.RawDataOptions">
+      <summary>
+            Gets or sets options used to render the <see cref="P:C1.Win.Olap.C1OlapPrintDocument.RawDataGrid" />.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.ShowRawData">
+      <summary>
+            Gets or sets a value that determines whether the <see cref="P:C1.Win.Olap.C1OlapPrintDocument.RawDataGrid" /> should
+            be displayed in the report.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.OlapEngine">
+      <summary>
+            Gets the <see cref="T:C1.Olap.C1OlapEngine" /> that contains the data and parameters 
+            used to generate this document.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.HeaderText">
+      <summary>
+            Gets or sets a string used as a report header.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.HeaderSeparator">
+      <summary>
+            Gets or sets a value that specifies whether a separator is drawn below the header.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.HeaderFont">
+      <summary>
+            Gets or sets the <see cref="T:System.Drawing.Font" /> used to render the report header.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.FooterText">
+      <summary>
+            Gets or sets the string used as a report footer.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.FooterSeparator">
+      <summary>
+            Gets or sets a value that specifies whether a separator is drawn above the footer.
+            </summary>
+    </member>
+    <member name="P:C1.Win.Olap.C1OlapPrintDocument.FooterFont">
+      <summary>
+            Gets or sets the <see cref="T:System.Drawing.Font" /> used to render the report footer.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.PrintDocumentOptions">
+      <summary>
+            Lets users view and edit the options in a <see cref="T:C1.Win.Olap.C1OlapPrintDocument" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.PrintDocumentOptions.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.PrintDocumentOptions" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.PrintDocumentOptions.Dispose(System.Boolean)">
+      <summary>
+            Clean up any resources being used.
+            </summary>
+      <param name="disposing">True if managed resources should be disposed; otherwise, False.</param>
+    </member>
+    <member name="P:C1.Win.Olap.PrintDocumentOptions.Document">
+      <summary>
+            Gets or sets the <see cref="T:C1.Win.Olap.C1OlapPrintDocument" /> being edited by this 
+            <see cref="T:C1.Win.Olap.PrintDocumentOptions" />.
+            </summary>
+    </member>
+    <member name="T:C1.Win.Olap.C1OlapFieldDialog">
+      <summary>
+            Represents a dialog box used to edit the properties of 
+            <see cref="T:C1.Olap.C1OlapField" /> objects.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapFieldDialog.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapFieldDialog" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapFieldDialog.#ctor(C1.Olap.C1OlapField)">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.C1OlapFieldDialog" />.
+            </summary>
+      <param name="field">
+        <see cref="T:C1.Olap.C1OlapField" /> to be edited with this dialog.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapFieldDialog.OnActivated(System.EventArgs)">
+      <summary>
+            Overridden so set focus to the filter editor when the form activates.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that provides the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.C1OlapFieldDialog.Dispose(System.Boolean)">
+      <summary>
+            Clean up any resources being used.
+            </summary>
+      <param name="disposing">True if managed resources should be disposed; otherwise, False.</param>
+    </member>
+    <member name="T:C1.Win.Olap.CustomFilterDialog">
+      <summary>
+            Represents a dialog box used to edit the custom conditions
+            in a <see cref="T:C1.Olap.C1OlapFilter" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.CustomFilterDialog.#ctor">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.CustomFilterDialog" />.
+            </summary>
+    </member>
+    <member name="M:C1.Win.Olap.CustomFilterDialog.#ctor(C1.Olap.C1OlapFilter)">
+      <summary>
+            Initializes a new instance of a <see cref="T:C1.Win.Olap.CustomFilterDialog" />.
+            </summary>
+      <param name="filter">
+        <see cref="T:C1.Olap.C1OlapFilter" /> being edited with this dialog.</param>
+    </member>
+    <member name="M:C1.Win.Olap.CustomFilterDialog.OnActivated(System.EventArgs)">
+      <summary>
+            Overridden to initialize the focus when the form is activated.
+            </summary>
+      <param name="e">
+        <see cref="T:System.EventArgs" /> that provides the event data.</param>
+    </member>
+    <member name="M:C1.Win.Olap.CustomFilterDialog.Dispose(System.Boolean)">
+      <summary>
+            Clean up any resources being used.
+            </summary>
+      <param name="disposing">True if managed resources should be disposed; otherwise, False.</param>
+    </member>
+  </members>
+</doc>
