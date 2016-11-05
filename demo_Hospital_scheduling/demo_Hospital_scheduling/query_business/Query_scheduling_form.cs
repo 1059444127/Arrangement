@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Enity;
+using FastReport;
+using FastReport.Data;
 
 using demo_Hospital_scheduling.BLL;
 
@@ -60,6 +62,12 @@ namespace demo_Hospital_scheduling.query_business
         {
             try { dg.qingjia_application(user_name, dateTimePicker3, textBox2); }
             catch { }      
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Print_window pw = new Print_window(dataGridView1,comboBox1);
+            pw.Show();
         }
     }
 }

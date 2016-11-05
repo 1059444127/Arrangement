@@ -15,9 +15,7 @@ namespace demo_Hospital_scheduling.BLL
             datagridviewHelper dg = new datagridviewHelper();
             dg.CleanDataGridView(dataGridView1);
 
-            string _strWorkingDayAftern = "14:00";//早于此时间段班次为早班
-            string _strWorkingDayNig = "20:00";//介于14-20为午班，否则为晚班 
-            TimeSpan dspWorkingDayAftern = TimeSpan.Parse(_strWorkingDayAftern);
+            string _strWorkingDayNig = "12:00";//介于0-12为早班，否则为晚班 
             TimeSpan dspWorkingDayNig = TimeSpan.Parse(_strWorkingDayNig);
 
             for (int i = 1; i < 8; i++)
@@ -34,20 +32,16 @@ namespace demo_Hospital_scheduling.BLL
 
                 dto4 = Ba.QueryArrangementByOfficeAndBeginTime(t, comboBox1.SelectedValue.ToString());
 
-                int morn = 1, aftern = 7, nig = 13;//不同班次对应行号
+                int morn = 1,  nig = 10;//不同班次对应行号
                 try
                 {
                     for (int j = 0; j < dto4.Count(); j++)
                     {
-                        if ((dto4[j].BeginTime - t) < dspWorkingDayAftern)//显示早班
+                        
+                        if ((dto4[j].BeginTime - t) < dspWorkingDayNig)//显示早班
                         {
                             dataGridView1.Rows[morn].Cells[i].Value = dto4[j].DoctorName;//将对应医生姓名放置到对应日期的早班，并换行
                             morn++;
-                        }
-                        else if ((dto4[j].BeginTime - t) < dspWorkingDayNig)//显示晚班
-                        {
-                            dataGridView1.Rows[aftern].Cells[i].Value = dto4[j].DoctorName;//将对应医生姓名放置到对应日期的中班，并换行
-                            aftern++;
                         }
                         else//显示晚班
                         {
@@ -75,19 +69,14 @@ namespace demo_Hospital_scheduling.BLL
         public void InsertArrangement(DataGridView dataGridView1,ComboBox comboBox1,ComboBox comboBox2)
         {
             string begin, end;
-            if (dataGridView1.CurrentCell.RowIndex < 7)
+            if (dataGridView1.CurrentCell.RowIndex < 10)
             {
-                begin = " 08:00:00";
-                end = " 14:00:00";
-            }
-            else if (dataGridView1.CurrentCell.RowIndex < 13)
-            {
-                begin = " 14:00:00";
-                end = " 20:00:00";
-            }
+                begin = " 00:00:00";
+                end = " 12:00:00";
+            }         
             else
             {
-                begin = " 20:00:00";
+                begin = " 12:00:00";
                 end = " 23:59:59";
             }
 
@@ -112,19 +101,14 @@ namespace demo_Hospital_scheduling.BLL
         public void UpdateArrangement(DataGridView dataGridView1, ComboBox comboBox1, ComboBox comboBox2)
         {
             string begin, end;
-            if (dataGridView1.CurrentCell.RowIndex < 7)
+            if (dataGridView1.CurrentCell.RowIndex < 10)
             {
-                begin = " 08:00:00";
-                end = " 14:00:00";
-            }
-            else if (dataGridView1.CurrentCell.RowIndex < 13)
-            {
-                begin = " 14:00:00";
-                end = " 20:00:00";
+                begin = " 00:00:00";
+                end = " 12:00:00";
             }
             else
             {
-                begin = " 20:00:00";
+                begin = " 12:00:00";
                 end = " 23:59:59";
             }
 
@@ -151,17 +135,13 @@ namespace demo_Hospital_scheduling.BLL
         public void DelectArrangement(DataGridView dataGridView1)
         {
             string begin;
-            if (dataGridView1.CurrentCell.RowIndex < 7)
+            if (dataGridView1.CurrentCell.RowIndex < 10)
             {
-                begin = " 08:00:00";             
-            }
-            else if (dataGridView1.CurrentCell.RowIndex < 13)
-            {
-                begin = " 14:00:00";
+                begin = " 00:00:00";              
             }
             else
             {
-                begin = " 20:00:00";
+                begin = " 12:00:00";           
             }
 
             DateTime bT = DateTime.Parse(dataGridView1.Rows[0].Cells[dataGridView1.CurrentCell.ColumnIndex].Value.ToString() + begin);

@@ -67,11 +67,10 @@ namespace demo_Hospital_scheduling.BLL
             int index = dataGridView1.Rows.Add(18);            //显示时间段
             dataGridView1.Rows[0].Cells[0].Value = "日期";
             dataGridView1.Rows[1].Cells[0].Value = "早";
-            dataGridView1.Rows[7].Cells[0].Value = "中";
-            dataGridView1.Rows[13].Cells[0].Value = "晚";
+            dataGridView1.Rows[10].Cells[0].Value = "晚";
             for (int i = 0; i < dataGridView1.Rows.Count; i++)    //分区改变单元格背景颜色
             {
-                if (i % 6 == 0 || i == 0)
+                if (i % 2 == 0 || i == 0)
                     dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.LightSteelBlue;
                 else
                     dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.LightBlue;

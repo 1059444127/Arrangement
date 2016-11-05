@@ -55,6 +55,15 @@
     <Reference Include="C1.Win.C1TouchToolKit.2, Version=2.0.20162.188, Culture=neutral, PublicKeyToken=5e531fc0479701e7, processorArchitecture=MSIL" />
     <Reference Include="C1.Win.ImportServices.4, Version=4.0.20162.188, Culture=neutral, PublicKeyToken=944ae1ea0e47ca04" />
     <Reference Include="C1.Win.Olap.2, Version=2.0.20162.188, Culture=neutral, PublicKeyToken=79882d576c6336da, processorArchitecture=MSIL" />
+    <Reference Include="FastReport">
+      <HintPath>..\..\..\..\..\fasterport\fasterport\FastReport英文绿色版\FastReport.dll</HintPath>
+    </Reference>
+    <Reference Include="FastReport.Bars">
+      <HintPath>..\..\..\..\..\fasterport\fasterport\FastReport英文绿色版\FastReport.Bars.dll</HintPath>
+    </Reference>
+    <Reference Include="FastReport.Editor">
+      <HintPath>..\..\..\..\..\fasterport\fasterport\FastReport英文绿色版\FastReport.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AnalysisServices.AdomdClient, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -105,6 +114,12 @@
     <Compile Include="Hostpanel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="query_business\Print_window.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="query_business\Print_window.Designer.cs">
+      <DependentUpon>Print_window.cs</DependentUpon>
+    </Compile>
     <Compile Include="query_business\Query_scheduling_form.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -138,7 +153,6 @@
     <EmbeddedResource Include="FormLogin.resx">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -149,6 +163,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="query_business\Print_window.resx">
+      <DependentUpon>Print_window.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="query_business\Query_scheduling_form.resx">
       <DependentUpon>Query_scheduling_form.cs</DependentUpon>
     </EmbeddedResource>
